@@ -600,6 +600,8 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.health			= 100;
 	client->pers.max_health		= 100;
 
+	// client->pers.acrobatics		= 15;					// Addition of acrobatics skill
+
 	client->pers.max_bullets	= 200;
 	client->pers.max_shells		= 100;
 	client->pers.max_rockets	= 50;
@@ -1644,6 +1646,19 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		{
 			gi.sound(ent, CHAN_VOICE, gi.soundindex("*jump1.wav"), 1, ATTN_NORM, 0);
 			PlayerNoise(ent, ent->s.origin, PNOISE_SELF);
+			
+			/*
+			if (client->pers.acrobatics < 100)																				// If the player is not skill capped in acrobatics
+			{
+				client->pers.acrobatics = (client->pers.acrobatics + 0.01);													// Add 0.01 to the player's acrobatics skill
+				if ((client->pers.acrobatics - (int)client->pers.acrobatics) * 100 >= (int)client->pers.acrobatics - 15)	// If the player skills up
+				{
+					client->pers.acrobatics = client->pers.acrobatics + (1 - (client->pers.acrobatics - (int)client->pers.acrobatics));  // Increase the skill to the next integer
+					gi.dprintf("Your Acrobatics Skill Has Increased To %i\n", (int)client->pers.acrobatics);				// Print that the player's skill has increased
+					gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
+				}
+			}
+			*/
 		}
 
 		ent->viewheight = pm.viewheight;

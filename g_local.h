@@ -823,6 +823,8 @@ typedef struct
 	int			max_health;
 	int			savedFlags;
 
+	// float		acrobatics;			// Addition of acrobatics skill
+
 	int			selected_item;
 	int			inventory[MAX_ITEMS];
 
