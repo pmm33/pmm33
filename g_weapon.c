@@ -991,3 +991,380 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 
 	gi.linkentity (bfg);
 }
+
+/*
+=================
+fire_melee
+=================
+*/
+void fire_melee (edict_t *self, vec3_t start, vec3_t direction, float range, int kick, int damage, int weapontype, int mod)
+{
+	qboolean didHit = false;
+	qboolean damageSuccess = false;
+	vec3_t forward, right, up;
+	vec3_t end;
+	vec3_t dir;
+	trace_t tr;
+	int r;
+
+	tr = gi.trace(self->s.origin, NULL, NULL, start, self, MASK_SHOT);				// Trace to see if the enemy is hit
+
+	if (tr.fraction < 1.0)															// Mark that something has been hit
+	{
+		didHit = true;
+	}
+	else
+	{
+		vectoangles(direction, dir);
+		AngleVectors(dir, forward, right, up);
+		VectorMA(start, range, direction, end);
+		tr = gi.trace(start, NULL, NULL, end, self, MASK_SHOT);
+		if (tr.fraction < 1.0)
+		{
+			didHit = true;															// Mark that something has been hit
+		}
+	}
+
+	if (!didHit)
+	{
+		gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/Swoosh1.wav"), 1, ATTN_NORM, 0);
+		return;
+	}
+
+	if (tr.ent->takedamage == DAMAGE_YES || tr.ent->takedamage == DAMAGE_AIM)
+	{
+		r = rand() % 100;																		// Generate a random number between 0 and 99
+		if (weapontype == 0)																	// If the weapon is your fists
+		{
+			if (r < self->client->pers.handtohand * 2)											// Calculate damageSuccess based on hand-to-hand skill
+			{
+				damageSuccess = true;															// The hit will successfully do damage
+				if (self->client->pers.handtohand < 100)										// If the hand-to-hand skill is less than the skill cap
+				{
+					self->client->pers.handtohand = self->client->pers.handtohand + 0.01;		// Add progress to the skill
+					if ((self->client->pers.handtohand - (int)self->client->pers.handtohand) * 100 >= (int)self->client->pers.handtohand - 25)		// If the skill levels
+					{
+						self->client->pers.handtohand = self->client->pers.handtohand + (1 - (self->client->pers.handtohand - (int)self->client->pers.handtohand));	// Increase the skill to the next level
+						gi.dprintf("Your Hand-to-Hand Skill Has Increased To %i\n", (int)self->client->pers.handtohand);		// Print that the player's skill has increased
+						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
+					}
+				}
+			}
+		}
+		else if (weapontype == 1)																// If the weapon is your sword
+		{
+			if (r < self->client->pers.longblade * 2)											// Calculate damageSuccess based on long blade skill
+			{
+				damageSuccess = true;															// The hit will successfully do damage
+				if (self->client->pers.longblade < 100)											// If the long blade skill is less than the skill cap
+				{
+					self->client->pers.longblade = self->client->pers.longblade + 0.01;			// Add progress to the skill
+					if ((self->client->pers.longblade - (int)self->client->pers.longblade) * 100 >= (int)self->client->pers.longblade - 25)		// If the skill levels
+					{
+						self->client->pers.longblade = self->client->pers.longblade + (1 - (self->client->pers.longblade - (int)self->client->pers.longblade));	// Increase the skill to the next level
+						gi.dprintf("Your Long Blade Skill Has Increased To %i\n", (int)self->client->pers.longblade);			// Print that the player's skill has increased
+						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
+					}
+				}
+			}
+		}
+		else if (weapontype == 2)																// If the weapon is your dagger
+		{
+			if (r < self->client->pers.shortblade * 2)											// Calculate damageSuccess based on short blade skill
+			{
+				damageSuccess = true;															// The hit will successfully do damage
+				if (self->client->pers.shortblade < 100)										// If the short blade skill is less than the skill cap
+				{
+					self->client->pers.shortblade = self->client->pers.shortblade + 0.01;		// Add progress to the skill
+					if ((self->client->pers.shortblade - (int)self->client->pers.shortblade) * 100 >= (int)self->client->pers.shortblade - 25)		// If the skill levels
+					{
+						self->client->pers.shortblade = self->client->pers.shortblade + (1 - (self->client->pers.shortblade - (int)self->client->pers.shortblade));	// Increase the skill to the next level
+						gi.dprintf("Your Short Blade Skill Has Increased To %i\n", (int)self->client->pers.shortblade);			// Print that the player's skill has increased
+						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
+					}
+				}
+			}
+		}
+		else if (weapontype == 3)																// If the weapon is your axe
+		{
+			if (r < self->client->pers.axe * 2)													// Calculate damageSuccess based on axe skill
+			{
+				damageSuccess = true;															// The hit will successfully do damage
+				if (self->client->pers.axe < 100)												// If the axe skill is less than the skill cap
+				{
+					self->client->pers.axe = self->client->pers.axe + 0.01;						// Add progress to the skill
+					if ((self->client->pers.axe - (int)self->client->pers.axe) * 100 >= (int)self->client->pers.axe - 25)		// If the skill levels
+					{
+						self->client->pers.axe = self->client->pers.axe + (1 - (self->client->pers.axe - (int)self->client->pers.axe));	// Increase the skill to the next level
+						gi.dprintf("Your Axe Skill Has Increased To %i\n", (int)self->client->pers.axe);						// Print that the player's skill has increased
+						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
+					}
+				}
+			}
+		}
+		else if (weapontype == 4)																// If the weapon is your mace
+		{
+			if (r < self->client->pers.blunt * 2)												// Calculate damageSuccess based on blunt skill
+			{
+				damageSuccess = true;															// The hit will successfully do damage
+				if (self->client->pers.blunt < 100)												// If the blunt skill is less than the skill cap
+				{
+					self->client->pers.blunt = self->client->pers.blunt + 0.01;					// Add progress to the skill
+					if ((self->client->pers.blunt - (int)self->client->pers.blunt) * 100 >= (int)self->client->pers.blunt - 25)		// If the skill levels
+					{
+						self->client->pers.blunt = self->client->pers.blunt + (1 - (self->client->pers.blunt - (int)self->client->pers.blunt));	// Increase the skill to the next level
+						gi.dprintf("Your Blunt Skill Has Increased To %i\n", (int)self->client->pers.blunt);					// Print that the player's skill has increased
+						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
+					}
+				}
+			}
+		}
+		else if (weapontype == 5)																// If the weapon is your spear
+		{
+			if (r < self->client->pers.spear * 2)												// Calculate damageSuccess based on spear skill
+			{
+				damageSuccess = true;															// The hit will successfully do damage
+				if (self->client->pers.spear < 100)												// If the spear skill is less than the skill cap
+				{
+					self->client->pers.spear = self->client->pers.spear + 0.01;					// Add progress to the skill
+					if ((self->client->pers.spear - (int)self->client->pers.spear) * 100 >= (int)self->client->pers.spear - 25)		// If the skill levels
+					{
+						self->client->pers.spear = self->client->pers.spear + (1 - (self->client->pers.spear - (int)self->client->pers.spear));	// Increase the skill to the next level
+						gi.dprintf("Your Spear Skill Has Increased To %i\n", (int)self->client->pers.spear);					// Print that the player's skill has increased
+						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
+					}
+				}
+			}
+		}
+
+		if (damageSuccess == true)																						// If the hit will successfully do damage
+		{
+			T_Damage(tr.ent, self, self, direction, tr.endpos, tr.plane.normal, damage, kick/2, DAMAGE_ENERGY, mod);	// Deal the damage
+			gi.sound(tr.ent, CHAN_AUTO, gi.soundindex("morrowind/BodyHit.wav"), 1, ATTN_NORM, 0);						// Play the hit sound on the enemy
+			VectorScale(tr.plane.normal, 256, end);
+			gi.WriteByte(svc_temp_entity);
+			gi.WriteByte(TE_BLOOD);																						// Make blood
+			gi.WritePosition(tr.endpos);
+			gi.WriteDir(end);
+			gi.multicast(tr.endpos, MULTICAST_PVS);
+		}
+		else																											// If the hit will not successfully do damage
+		{
+			gi.sound(tr.ent, CHAN_AUTO, gi.soundindex("morrowind/Miss.wav"), 1, ATTN_NORM, 0);							// Play the miss sound on the enemy
+		}
+		return;
+	}
+
+	// At this point, something was hit but it cannot be dealt damage, so it must be a solid object or a wall
+
+	VectorScale(tr.plane.normal, 256, end);
+	gi.WriteByte(svc_temp_entity);
+	gi.WriteByte(TE_SPARKS);																							// Make sparks
+	gi.WritePosition(tr.endpos);
+	gi.WriteDir(end);
+	gi.multicast(tr.endpos, MULTICAST_PVS);
+	if (weapontype == 0)
+	{
+		gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/Punch1.wav"), 1, ATTN_NORM, 0);
+	}
+	else
+	{
+		r = rand() % 3;
+		if (r == 0)
+			gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/HitLight.wav"), 1, ATTN_NORM, 0);							// Hit wall sound
+		else if (r == 1)
+			gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/HitMedium.wav"), 1, ATTN_NORM, 0);							// Hit wall sound
+		else
+			gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/HitHeavy.wav"), 1, ATTN_NORM, 0);							// Hit wall sound
+	}
+}
+
+/*
+=================
+fire_bow
+=================
+*/
+void arrow_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+{
+	qboolean damageSuccess = false;
+	int r;
+
+	if (other == self->owner)
+		return;
+
+	if (surf && (surf->flags & SURF_SKY))
+	{
+		G_FreeEdict (self);
+		return;
+	}
+
+	if (self->owner->client)
+		PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
+
+	if (other->takedamage)
+	{
+		r = rand() % 100;
+		if (r < self->owner->client->pers.marksman * 2)											// Calculate damageSuccess based on marksman skill
+			{
+				damageSuccess = true;															// The hit will successfully do damage
+				if (self->owner->client->pers.marksman < 100)									// If the marksman skill is less than the skill cap
+				{
+					self->owner->client->pers.marksman = self->owner->client->pers.marksman + 0.01;					// Add progress to the skill
+					if ((self->owner->client->pers.marksman - (int)self->owner->client->pers.marksman) * 100 >= (int)self->owner->client->pers.marksman - 25)		// If the skill levels
+					{
+						self->owner->client->pers.marksman = self->owner->client->pers.marksman + (1 - (self->owner->client->pers.marksman - (int)self->owner->client->pers.marksman));	// Increase the skill to the next level
+						gi.dprintf("Your Marksman Skill Has Increased To %i\n", (int)self->owner->client->pers.marksman);			// Print that the player's skill has increased
+						gi.sound(self->owner, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);				// Play skill up sound
+					}
+				}
+			}
+
+		if (damageSuccess == true)
+		{
+			T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, MOD_BOW);
+			gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/BodyHit.wav"), 1, ATTN_NORM, 0);
+			/*
+			gi.WriteByte (svc_temp_entity);
+			gi.WriteByte (TE_BLOOD);
+			gi.WritePosition (self->s.origin);
+			gi.multicast (self->s.origin, MULTICAST_PVS);
+			*/
+		}
+		else
+			gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/Miss.wav"), 1, ATTN_NORM, 0);
+	}
+	else
+	{
+		gi.WriteByte (svc_temp_entity);
+		gi.WriteByte (TE_SPARKS);
+		gi.WritePosition (self->s.origin);
+		if (!plane)
+			gi.WriteDir (vec3_origin);
+		else
+			gi.WriteDir (plane->normal);
+		gi.multicast (self->s.origin, MULTICAST_PVS);
+	}
+
+	G_FreeEdict (self);
+}
+
+void fire_bow (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed)
+{
+	edict_t	*bolt;
+	trace_t	tr;
+
+	VectorNormalize (dir);
+
+	bolt = G_Spawn();
+	bolt->svflags = SVF_DEADMONSTER;
+	VectorCopy (start, bolt->s.origin);
+	VectorCopy (start, bolt->s.old_origin);
+	vectoangles (dir, bolt->s.angles);
+	VectorScale (dir, speed, bolt->velocity);
+	bolt->movetype = MOVETYPE_FLYMISSILE;
+	bolt->clipmask = MASK_SHOT;
+	bolt->solid = SOLID_BBOX;
+	VectorClear (bolt->mins);
+	VectorClear (bolt->maxs);
+	bolt->s.modelindex = gi.modelindex ("models/objects/laser/tris.md2");
+	bolt->owner = self;
+	bolt->touch = arrow_touch;
+	bolt->nextthink = level.time + 2;
+	bolt->think = G_FreeEdict;
+	bolt->dmg = damage;
+	bolt->classname = "bolt";
+	gi.linkentity (bolt);
+
+	if (self->client)
+		check_dodge (self, bolt->s.origin, dir, speed);
+
+	tr = gi.trace (self->s.origin, NULL, NULL, bolt->s.origin, bolt, MASK_SHOT);
+	if (tr.fraction < 1.0)
+	{
+		VectorMA (bolt->s.origin, -10, dir, bolt->s.origin);
+		bolt->touch (bolt, tr.ent, NULL, NULL);
+	}
+}
+
+/*
+=================
+fire_fireball
+=================
+*/
+void fireball_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+{
+	if (other == self->owner)
+		return;
+
+	if (surf && (surf->flags & SURF_SKY))
+	{
+		G_FreeEdict (self);
+		return;
+	}
+
+	if (self->owner->client)
+		PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
+
+	if (other->takedamage)
+	{
+			T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, MOD_BOW);
+			gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/FireballHit.wav"), 1, ATTN_NORM, 0);
+			if (other->client)
+			{
+				other->client->pers.burning = 5;
+				other->client->pers.burner = self->owner;
+			}
+	}
+	else
+	{
+		gi.WriteByte (svc_temp_entity);
+		gi.WriteByte (TE_BLASTER);
+		gi.WritePosition (self->s.origin);
+		if (!plane)
+			gi.WriteDir (vec3_origin);
+		else
+			gi.WriteDir (plane->normal);
+		gi.multicast (self->s.origin, MULTICAST_PVS);
+	}
+
+	G_FreeEdict (self);
+}
+
+void fire_fireball (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed)
+{
+	edict_t	*bolt;
+	trace_t	tr;
+
+	VectorNormalize (dir);
+
+	bolt = G_Spawn();
+	bolt->svflags = SVF_DEADMONSTER;
+	VectorCopy (start, bolt->s.origin);
+	VectorCopy (start, bolt->s.old_origin);
+	vectoangles (dir, bolt->s.angles);
+	VectorScale (dir, speed, bolt->velocity);
+	bolt->movetype = MOVETYPE_FLYMISSILE;
+	bolt->clipmask = MASK_SHOT;
+	bolt->solid = SOLID_BBOX;
+	VectorClear (bolt->mins);
+	VectorClear (bolt->maxs);
+	bolt->s.effects = EF_BLASTER;
+	bolt->s.modelindex = gi.modelindex ("models/objects/laser/tris.md2");
+	bolt->owner = self;
+	bolt->touch = fireball_touch;
+	bolt->nextthink = level.time + 2;
+	bolt->think = G_FreeEdict;
+	bolt->dmg = damage;
+	bolt->classname = "bolt";
+	gi.linkentity (bolt);
+
+	if (self->client)
+		check_dodge (self, bolt->s.origin, dir, speed);
+
+	tr = gi.trace (self->s.origin, NULL, NULL, bolt->s.origin, bolt, MASK_SHOT);
+	if (tr.fraction < 1.0)
+	{
+		VectorMA (bolt->s.origin, -10, dir, bolt->s.origin);
+		bolt->touch (bolt, tr.ent, NULL, NULL);
+	}
+}

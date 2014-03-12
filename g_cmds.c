@@ -1,6 +1,7 @@
 #include "g_local.h"
 #include "m_player.h"
 
+void ClientTalk(edict_t *ent, int r);				// Custom definition to use ClientTalk in Cmd_Talk
 
 char *ClientTeam (edict_t *ent)
 {
@@ -880,6 +881,31 @@ void Cmd_PlayerList_f(edict_t *ent)
 	gi.cprintf(ent, PRINT_HIGH, "%s", text);
 }
 
+void Cmd_Potion (edict_t *ent)																		// Custom command for the player to drink a potion
+{
+	if (!ent->client)																				// If the calling entity is not a player
+		return;																						// End the command
+
+	if (ent->client->pers.potions <= 0)																// If the player has no potions left
+	{
+		gi.dprintf("No Potions Left\n");															// Print that the player has no potions left
+		return;																						// End the command
+	}
+
+	ent->client->pers.potions--;																	// Use a potion up
+	ent->client->pers.magickaregen = 5;																// Set the magicka regeneration timer to 5 seconds
+	gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/PotionDrink.wav"), 1, ATTN_NORM, 0);			// Play the drink potion sound
+	gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/MagickaRestore.wav"), 1, ATTN_NORM, 0);		// Play the magicka regeneration sound
+}
+
+void Cmd_Talk (edict_t *ent)											// Custom command for the player to talk
+{
+	if (!ent->client)													// If the calling entity is not a player
+		return;															// End the command
+
+	ClientTalk(ent, rand() % 14);										// Call ClientTalk with a random number
+}
+
 
 /*
 =================
@@ -968,6 +994,10 @@ void ClientCommand (edict_t *ent)
 		Cmd_Wave_f (ent);
 	else if (Q_stricmp(cmd, "playerlist") == 0)
 		Cmd_PlayerList_f(ent);
+	else if (Q_stricmp(cmd, "potion") == 0)
+		Cmd_Potion (ent);
+	else if (Q_stricmp(cmd, "talk") == 0)
+		Cmd_Talk (ent);
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }

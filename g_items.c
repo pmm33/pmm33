@@ -2,6 +2,15 @@
 
 
 qboolean	Pickup_Weapon (edict_t *ent, edict_t *other);
+qboolean	Pickup_Melee_Weapon (edict_t *ent, edict_t *other);
+qboolean	Pickup_Bow (edict_t *ent, edict_t *other);
+qboolean	Pickup_Sword (edict_t *ent, edict_t *other);
+qboolean	Pickup_Dagger (edict_t *ent, edict_t *other);
+qboolean	Pickup_Axe (edict_t *ent, edict_t *other);
+qboolean	Pickup_Mace (edict_t *ent, edict_t *other);
+qboolean	Pickup_Spear (edict_t *ent, edict_t *other);
+qboolean	Pickup_Potion(edict_t *ent, edict_t *other);
+qboolean	Pickup_Book(edict_t *ent, edict_t *other);
 void		Use_Weapon (edict_t *ent, gitem_t *inv);
 void		Drop_Weapon (edict_t *ent, gitem_t *inv);
 
@@ -16,6 +25,14 @@ void Weapon_Grenade (edict_t *ent);
 void Weapon_GrenadeLauncher (edict_t *ent);
 void Weapon_Railgun (edict_t *ent);
 void Weapon_BFG (edict_t *ent);
+void Weapon_Fists (edict_t *ent);
+void Weapon_Sword (edict_t *ent);
+void Weapon_Dagger (edict_t *ent);
+void Weapon_Axe (edict_t *ent);
+void Weapon_Mace (edict_t *ent);
+void Weapon_Spear (edict_t *ent);
+void Weapon_Bow (edict_t *ent);
+void Weapon_Fireball (edict_t *ent);
 
 gitem_armor_t jacketarmor_info	= { 25,  50, .30, .00, ARMOR_JACKET};
 gitem_armor_t combatarmor_info	= { 50, 100, .60, .30, ARMOR_COMBAT};
@@ -309,11 +326,159 @@ qboolean Pickup_Pack (edict_t *ent, edict_t *other)
 			other->client->pers.inventory[index] = other->client->pers.max_slugs;
 	}
 
+	item = FindItem("Arrows");
+	if (item)
+	{
+		index = ITEM_INDEX(item);
+		other->client->pers.inventory[index] += item->quantity;
+		if (other->client->pers.inventory[index] > other->client->pers.max_arrows)
+			other->client->pers.inventory[index] = other->client->pers.max_arrows;
+	}
+
 	if (!(ent->spawnflags & DROPPED_ITEM) && (deathmatch->value))
 		SetRespawn (ent, ent->item->quantity);
 
 	return true;
 }
+
+qboolean Pickup_Potion(edict_t *ent, edict_t *other)
+{
+	gitem_t *item;
+
+	item = FindItem("Magicka Potion");
+	if (item)
+		other->client->pers.potions++;
+
+	if (!(ent->spawnflags & DROPPED_ITEM) )
+	{
+		if (! (ent->spawnflags & DROPPED_PLAYER_ITEM) )
+		{
+			if (deathmatch->value)
+			{
+				if ((int)(dmflags->value) & DF_WEAPONS_STAY)
+					ent->flags |= FL_RESPAWN;
+				else
+					SetRespawn (ent, 30);
+			}
+			if (coop->value)
+				ent->flags |= FL_RESPAWN;
+		}
+	}
+
+	return true;
+}
+
+
+qboolean Pickup_Book(edict_t *ent, edict_t *other)
+{
+	gitem_t *item;
+	int r;
+
+	item = FindItem("Skill Book");
+	if (item)
+	{
+		r = rand() % 9;											// Determine which skill the book will increase
+		if (r == 0)												// r = 0 increases Acrobatics skill
+		{
+			if (other->client->pers.acrobatics < 100)			// If the skill is not capped
+			{
+				other->client->pers.acrobatics = other->client->pers.acrobatics + (1 - (other->client->pers.acrobatics - (int)other->client->pers.acrobatics)) + 4;		// Increase the skill by 5 levels
+				gi.dprintf("Your Acrobatics Skill Has Increased To %i\n", (int)other->client->pers.acrobatics);															// Print that the player's skill has increased
+				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
+			}
+		}
+		else if (r == 1)										// r = 1 increases Hand-to-Hand skill
+		{
+			if (other->client->pers.handtohand < 100)			// If the skill is not capped
+			{
+				other->client->pers.handtohand = other->client->pers.handtohand + (1 - (other->client->pers.handtohand - (int)other->client->pers.handtohand)) + 4;		// Increase the skill by 5 levels
+				gi.dprintf("Your Hand-to-Hand Skill Has Increased To %i\n", (int)other->client->pers.handtohand);														// Print that the player's skill has increased
+				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
+			}
+		}
+		else if (r == 2)										// r = 2 increases Long Blade skill
+		{
+			if (other->client->pers.longblade < 100)			// If the skill is not capped
+			{
+				other->client->pers.longblade = other->client->pers.longblade + (1 - (other->client->pers.longblade - (int)other->client->pers.longblade)) + 4;			// Increase the skill by 5 levels
+				gi.dprintf("Your Long Blade Skill Has Increased To %i\n", (int)other->client->pers.longblade);															// Print that the player's skill has increased
+				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
+			}
+		}
+		else if (r == 3)										// r = 3 increases Short Blade skill
+		{
+			if (other->client->pers.shortblade < 100)			// If the skill is not capped
+			{
+				other->client->pers.shortblade = other->client->pers.shortblade + (1 - (other->client->pers.shortblade - (int)other->client->pers.shortblade)) + 4;		// Increase the skill by 5 levels
+				gi.dprintf("Your Short Blade Skill Has Increased To %i\n", (int)other->client->pers.shortblade);														// Print that the player's skill has increased
+				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
+			}
+		}
+		else if (r == 4)										// r = 4 increases Axe skill
+		{
+			if (other->client->pers.axe < 100)					// If the skill is not capped
+			{
+				other->client->pers.axe = other->client->pers.axe + (1 - (other->client->pers.axe - (int)other->client->pers.axe)) + 4;									// Increase the skill by 5 levels
+				gi.dprintf("Your Axe Skill Has Increased To %i\n", (int)other->client->pers.axe);																		// Print that the player's skill has increased
+				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
+			}
+		}
+		else if (r == 5)										// r = 5 increases Blunt skill
+		{
+			if (other->client->pers.blunt < 100)				// If the skill is not capped
+			{
+				other->client->pers.blunt = other->client->pers.blunt + (1 - (other->client->pers.blunt - (int)other->client->pers.blunt)) + 4;							// Increase the skill by 5 levels
+				gi.dprintf("Your Blunt Skill Has Increased To %i\n", (int)other->client->pers.blunt);																	// Print that the player's skill has increased
+				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
+			}
+		}
+		else if (r == 6)										// r = 6 increases Spear skill
+		{
+			if (other->client->pers.spear < 100)				// If the skill is not capped
+			{
+				other->client->pers.spear = other->client->pers.spear + (1 - (other->client->pers.spear - (int)other->client->pers.spear)) + 4;							// Increase the skill by 5 levels
+				gi.dprintf("Your Spear Skill Has Increased To %i\n", (int)other->client->pers.spear);																	// Print that the player's skill has increased
+				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
+			}
+		}
+		else if (r == 7)										// r = 7 increases Marksman skill
+		{
+			if (other->client->pers.marksman < 100)				// If the skill is not capped
+			{
+				other->client->pers.marksman = other->client->pers.marksman + (1 - (other->client->pers.marksman - (int)other->client->pers.marksman)) + 4;				// Increase the skill by 5 levels
+				gi.dprintf("Your Marksman Skill Has Increased To %i\n", (int)other->client->pers.marksman);																// Print that the player's skill has increased
+				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
+			}
+		}
+		else if (r == 8)										// r = 8 increases Destruction skill
+		{
+			if (other->client->pers.destruction < 100)			// If the skill is not capped
+			{
+				other->client->pers.destruction = other->client->pers.destruction + (1 - (other->client->pers.destruction - (int)other->client->pers.destruction)) + 4;	// Increase the skill by 5 levels
+				gi.dprintf("Your Destruction Skill Has Increased To %i\n", (int)other->client->pers.destruction);														// Print that the player's skill has increased
+				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
+			}
+		}
+	}
+
+	if (!(ent->spawnflags & DROPPED_ITEM) )
+	{
+		if (! (ent->spawnflags & DROPPED_PLAYER_ITEM) )
+		{
+			if (deathmatch->value)
+			{
+				if ((int)(dmflags->value) & DF_WEAPONS_STAY)
+					ent->flags |= FL_RESPAWN;
+				else
+					SetRespawn (ent, 30);
+			}
+			if (coop->value)
+				ent->flags |= FL_RESPAWN;
+		}
+	}
+	return true;
+}
+
 
 //======================================================================
 
@@ -445,6 +610,8 @@ qboolean Add_Ammo (edict_t *ent, gitem_t *item, int count)
 		max = ent->client->pers.max_cells;
 	else if (item->tag == AMMO_SLUGS)
 		max = ent->client->pers.max_slugs;
+	else if (item->tag == AMMO_ARROWS)
+		max = ent->client->pers.max_arrows;
 	else
 		return false;
 
@@ -482,7 +649,7 @@ qboolean Pickup_Ammo (edict_t *ent, edict_t *other)
 
 	if (weapon && !oldcount)
 	{
-		if (other->client->pers.weapon != ent->item && ( !deathmatch->value || other->client->pers.weapon == FindItem("blaster") ) )
+		if (other->client->pers.weapon != ent->item && ( !deathmatch->value || other->client->pers.weapon == FindItem("Fists") ) )
 			other->client->newweapon = ent->item;
 	}
 
@@ -1265,6 +1432,190 @@ gitem_t	itemlist[] =
 	//
 	// WEAPONS 
 	//
+							// Melee Weapons
+
+// Fists
+	{
+		"weapon_fists",					// The map entity name
+		NULL,							// The pickup function
+		Use_Weapon,						// The use function
+		NULL,							// The drop function
+		Weapon_Fists,					// What the use function is called
+		"misc/w_pkup.wav",
+		"models/weapons/g_bat/tris.md2", 0,
+		"models/weapons/g_bat/tris.md2",// The weapon model
+		"anum_1",						// The icon to be used
+		"Fists",						// The item name
+		0,
+		0,
+		NULL,
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_FISTS,						// The model index, just an integer defined in g_local.h
+		NULL,
+		0,
+        ""
+},
+
+// Sword
+	{
+		"weapon_sword",					// The map entity name
+		Pickup_Melee_Weapon,			// The pickup function
+		Use_Weapon,						// The use function
+		Drop_Weapon,					// The drop function
+		Weapon_Sword,					// What the use function is called
+		"morrowind/SwordPickup.wav",
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,
+		"models/weapons/g_bat/tris.md2",// The weapon model
+		"anum_2",						// The icon to be used
+		"Sword",						// The item name
+		0,
+		0,
+		NULL,
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_SWORD,						// The model index, just an integer defined in g_local.h
+		NULL,
+		0,
+        ""
+},
+
+// Dagger
+	{
+		"weapon_dagger",				// The map entity name
+		Pickup_Melee_Weapon,			// The pickup function
+		Use_Weapon,						// The use function
+		Drop_Weapon,					// The drop function
+		Weapon_Dagger,					// What the use function is called
+		"morrowind/DaggerPickup.wav",
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,
+		"models/weapons/g_bat/tris.md2",// The weapon model
+		"anum_3",						// The icon to be used
+		"Dagger",						// The item name
+		0,
+		0,
+		NULL,
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_DAGGER,						// The model index, just an integer defined in g_local.h
+		NULL,
+		0,
+        ""
+},
+
+// Axe
+	{
+		"weapon_axe",					// The map entity name
+		Pickup_Melee_Weapon,			// The pickup function
+		Use_Weapon,						// The use function
+		Drop_Weapon,					// The drop function
+		Weapon_Axe,						// What the use function is called
+		"morrowind/AxePickup.wav",
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,
+		"models/weapons/g_bat/tris.md2",// The weapon model
+		"anum_4",						// The icon to be used
+		"Axe",							// The item name
+		0,
+		0,
+		NULL,
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_AXE,						// The model index, just an integer defined in g_local.h
+		NULL,
+		0,
+        ""
+},
+
+// Mace
+	{
+		"weapon_mace",					// The map entity name
+		Pickup_Melee_Weapon,			// The pickup function
+		Use_Weapon,						// The use function
+		Drop_Weapon,					// The drop function
+		Weapon_Mace,					// What the use function is called
+		"morrowind/MacePickup.wav",
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,
+		"models/weapons/g_bat/tris.md2",// The weapon model
+		"anum_5",						// The icon to be used
+		"Mace",							// The item name
+		0,
+		0,
+		NULL,
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_MACE,						// The model index, just an integer defined in g_local.h
+		NULL,
+		0,
+        ""
+},
+
+// Spear
+	{
+		"weapon_spear",					// The map entity name
+		Pickup_Melee_Weapon,			// The pickup function
+		Use_Weapon,						// The use function
+		Drop_Weapon,					// The drop function
+		Weapon_Spear,					// What the use function is called
+		"morrowind/SpearPickup.wav",
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,
+		"models/weapons/g_bat/tris.md2",// The weapon model
+		"anum_6",						// The icon to be used
+		"Spear",						// The item name
+		0,
+		0,
+		NULL,
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_SPEAR,						// The model index, just an integer defined in g_local.h
+		NULL,
+		0,
+        ""
+},
+
+// ==========================================================================================================================
+
+// Bow
+	{
+		"weapon_bow",					// The map entity name
+		Pickup_Weapon,					// The pickup function
+		Use_Weapon,						// The use function
+		Drop_Weapon,					// The drop function
+		Weapon_Bow,						// What the use function is called
+		"morrowind/BowPickup.wav",
+		"models/weapons/g_shotg/tris.md2", EF_ROTATE,
+		"models/weapons/v_shotg/tris.md2",// The weapon model
+		"anum_7",						// The icon to be used
+		"Bow",							// The item name
+		0,
+		1,
+		"Arrows",						// Ammo used for weapon
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_BOW,						// The model index, just an integer defined in g_local.h
+		NULL,
+		0,
+        ""
+},
+
+// ==========================================================================================================================
+
+// Fireball
+
+	{
+		"weapon_fireball",				// The map entity name
+		NULL,							// The pickup function
+		Use_Weapon,						// The use function
+		NULL,							// The drop function
+		Weapon_Fireball,				// What the use function is called
+		"misc/w_pkup.wav",
+		"models/weapons/g_blast/tris.md2", 0,
+		"models/weapons/v_blast/tris.md2",// The weapon model
+		"anum_8",						// The icon to be used
+		"Fireball",						// The item name
+		0,
+		0,
+		NULL,
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_FIREBALL,						// The model index, just an integer defined in g_local.h
+		NULL,
+		0,
+        ""
+},
+
+// ==========================================================================================================================
 
 /* weapon_blaster (.3 .3 1) (-16 -16 -16) (16 16 16)
 always owned, never in the world
@@ -1293,44 +1644,44 @@ always owned, never in the world
 /*QUAKED weapon_shotgun (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
 	{
-		"weapon_shotgun", 
-		Pickup_Weapon,
+		"weapon_shotgun",
+		Pickup_Bow,
 		Use_Weapon,
 		Drop_Weapon,
-		Weapon_Shotgun,
-		"misc/w_pkup.wav",
+		Weapon_Shotgun,																	// Changed so that the shotgun spawns are bow spawns
+		"morrowind/BowPickup.wav",														// Changed so that the shotgun pickup sound is the bow pickup sound
 		"models/weapons/g_shotg/tris.md2", EF_ROTATE,
 		"models/weapons/v_shotg/tris.md2",
-/* icon */		"w_shotgun",
-/* pickup */	"Shotgun",
+		"anum_7",																		// Changed so that the shotgun icon is the bow icon
+		"Bow",																			// Changed so that the shotgun spawns are bow spawns
 		0,
 		1,
-		"Shells",
+		"Arrows",										
 		IT_WEAPON|IT_STAY_COOP,
-		WEAP_SHOTGUN,
+		WEAP_BOW,						
 		NULL,
 		0,
-/* precache */ "weapons/shotgf1b.wav weapons/shotgr1b.wav"
-	},
+        ""
+},
 
 /*QUAKED weapon_supershotgun (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
 	{
 		"weapon_supershotgun", 
-		Pickup_Weapon,
+		Pickup_Bow,
 		Use_Weapon,
 		Drop_Weapon,
-		Weapon_SuperShotgun,
-		"misc/w_pkup.wav",
-		"models/weapons/g_shotg2/tris.md2", EF_ROTATE,
+		Weapon_Bow,															// Changed so that the supershotgun spawns are bow spawns
+		"morrowind/BowPickup.wav",											// Changed so that the supershotgun pickup sound is the bow pickup sound
+		"models/weapons/g_shotg/tris.md2", EF_ROTATE,						// Changed so that the supershotgun model is the bow model
 		"models/weapons/v_shotg2/tris.md2",
-/* icon */		"w_sshotgun",
-/* pickup */	"Super Shotgun",
+/* icon */		"anum_7",
+/* pickup */	"Bow",														// Changed so that the supershotgun spawns are bow spawns
 		0,
 		2,
-		"Shells",
+		"Arrows",
 		IT_WEAPON|IT_STAY_COOP,
-		WEAP_SUPERSHOTGUN,
+		WEAP_BOW,
 		NULL,
 		0,
 /* precache */ "weapons/sshotf1b.wav"
@@ -1340,20 +1691,20 @@ always owned, never in the world
 */
 	{
 		"weapon_machinegun", 
-		Pickup_Weapon,
+		Pickup_Sword,																// Changed machinegun spawns to sword spawns
 		Use_Weapon,
 		Drop_Weapon,
-		Weapon_Machinegun,
-		"misc/w_pkup.wav",
-		"models/weapons/g_machn/tris.md2", EF_ROTATE,
+		Weapon_Sword,
+		"morrowind/SwordPickup.wav",
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,									// Changed to make machinegun model the sword model
 		"models/weapons/v_machn/tris.md2",
-/* icon */		"w_machinegun",
-/* pickup */	"Machinegun",
+/* icon */		"anum_2",
+/* pickup */	"Sword",
 		0,
 		1,
 		"Bullets",
 		IT_WEAPON|IT_STAY_COOP,
-		WEAP_MACHINEGUN,
+		WEAP_SWORD,
 		NULL,
 		0,
 /* precache */ "weapons/machgf1b.wav weapons/machgf2b.wav weapons/machgf3b.wav weapons/machgf4b.wav weapons/machgf5b.wav"
@@ -1363,38 +1714,38 @@ always owned, never in the world
 */
 	{
 		"weapon_chaingun", 
-		Pickup_Weapon,
+		Pickup_Dagger,													// Changed so that the chaingun spawns are dagger spawns
 		Use_Weapon,
 		Drop_Weapon,
-		Weapon_Chaingun,
-		"misc/w_pkup.wav",
-		"models/weapons/g_chain/tris.md2", EF_ROTATE,
+		Weapon_Dagger,
+		"morrowind/DaggerPickup.wav",
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,
 		"models/weapons/v_chain/tris.md2",
-/* icon */		"w_chaingun",
-/* pickup */	"Chaingun",
+/* icon */		"anum_3",
+/* pickup */	"Dagger",
 		0,
 		1,
 		"Bullets",
 		IT_WEAPON|IT_STAY_COOP,
-		WEAP_CHAINGUN,
+		WEAP_DAGGER,
 		NULL,
 		0,
-/* precache */ "weapons/chngnu1a.wav weapons/chngnl1a.wav weapons/machgf3b.wav` weapons/chngnd1a.wav"
+/* precache */ ""
 	},
 
 /*QUAKED ammo_grenades (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
 	{
 		"ammo_grenades",
-		Pickup_Ammo,
+		Pickup_Potion,														// Changed so that grenade spawns are potion spawns
 		Use_Weapon,
 		Drop_Ammo,
 		Weapon_Grenade,
-		"misc/am_pkup.wav",
-		"models/items/ammo/grenades/medium/tris.md2", 0,
+		"morrowind/PotionPickup.wav",										// Changed so that the grenade pickup sound is the potion pickup sound
+		"models/items/potion/tris.md2", 0,									// Changed so that the grenade model is the potion model
 		"models/weapons/v_handgr/tris.md2",
-/* icon */		"a_grenades",
-/* pickup */	"Grenades",
+/* icon */		"i_pack",													// Changed so that the grenade icon is the potion icon
+/* pickup */	"Magicka Potion",											// Changed so that the grenade name is "Magicka Potion" on pickup
 /* width */		3,
 		5,
 		"grenades",
@@ -1402,45 +1753,45 @@ always owned, never in the world
 		WEAP_GRENADES,
 		NULL,
 		AMMO_GRENADES,
-/* precache */ "weapons/hgrent1a.wav weapons/hgrena1b.wav weapons/hgrenc1b.wav weapons/hgrenb1a.wav weapons/hgrenb2a.wav "
+/* precache */ ""
 	},
 
 /*QUAKED weapon_grenadelauncher (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
 	{
 		"weapon_grenadelauncher",
-		Pickup_Weapon,
+		Pickup_Axe,																// Changed so that the grenade launcher spawns are axe spawns
 		Use_Weapon,
 		Drop_Weapon,
 		Weapon_GrenadeLauncher,
-		"misc/w_pkup.wav",
-		"models/weapons/g_launch/tris.md2", EF_ROTATE,
+		"morrowind/AxePickup.wav",												// Changed so that the grenade launcher pickup sound is the axe pickup sound
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,								// Changed so that the grenade launcher model is the axe model
 		"models/weapons/v_launch/tris.md2",
-/* icon */		"w_glauncher",
-/* pickup */	"Grenade Launcher",
+/* icon */		"anum_4",														// Changed so that the grenade launcher icon is the axe icon
+/* pickup */	"Axe",															// Changed so that the grenade launcher name is "Axe" on pickup
 		0,
 		1,
 		"Grenades",
 		IT_WEAPON|IT_STAY_COOP,
-		WEAP_GRENADELAUNCHER,
+		WEAP_AXE,																// Changed to point to the axe
 		NULL,
 		0,
-/* precache */ "models/objects/grenade/tris.md2 weapons/grenlf1a.wav weapons/grenlr1b.wav weapons/grenlb1b.wav"
+/* precache */ ""
 	},
 
 /*QUAKED weapon_rocketlauncher (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
 	{
 		"weapon_rocketlauncher",
-		Pickup_Weapon,
+		Pickup_Mace,															// Changed so that the rocket launcher spawns are mace spawns
 		Use_Weapon,
 		Drop_Weapon,
 		Weapon_RocketLauncher,
-		"misc/w_pkup.wav",
-		"models/weapons/g_rocket/tris.md2", EF_ROTATE,
+		"morrowind/MacePickup.wav",												// Changed so that the rocket launcher pickup sound is the mace pickup sound
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,								// Changed so that the rocket launcher model is the mace model
 		"models/weapons/v_rocket/tris.md2",
-/* icon */		"w_rlauncher",
-/* pickup */	"Rocket Launcher",
+/* icon */		"anum_5",														// Changed so that the rocket launcher icon is the mace icon
+/* pickup */	"Mace",															// Changed so that the rocket launcher name is "Mace" on pickup
 		0,
 		1,
 		"Rockets",
@@ -1448,22 +1799,22 @@ always owned, never in the world
 		WEAP_ROCKETLAUNCHER,
 		NULL,
 		0,
-/* precache */ "models/objects/rocket/tris.md2 weapons/rockfly.wav weapons/rocklf1a.wav weapons/rocklr1b.wav models/objects/debris2/tris.md2"
+/* precache */ ""
 	},
 
 /*QUAKED weapon_hyperblaster (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
 	{
 		"weapon_hyperblaster", 
-		Pickup_Weapon,
+		Pickup_Spear,													// Changed so that the hyperblaster spawns are spear spawns
 		Use_Weapon,
 		Drop_Weapon,
 		Weapon_HyperBlaster,
-		"misc/w_pkup.wav",
-		"models/weapons/g_hyperb/tris.md2", EF_ROTATE,
+		"morrowind/SpearPickup.wav",									// Changed so that the hyperblaster pickup sound is the spear pickup sound
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,						// Changed so that the hyperblaster model is the spear model
 		"models/weapons/v_hyperb/tris.md2",
-/* icon */		"w_hyperblaster",
-/* pickup */	"HyperBlaster",
+/* icon */		"anum_6",												// Changed so that the hyperblaster icon is the spear icon
+/* pickup */	"Spear",												// Changed so that the hyperblaster name is "Spear" on pickup
 		0,
 		1,
 		"Cells",
@@ -1471,22 +1822,22 @@ always owned, never in the world
 		WEAP_HYPERBLASTER,
 		NULL,
 		0,
-/* precache */ "weapons/hyprbu1a.wav weapons/hyprbl1a.wav weapons/hyprbf1a.wav weapons/hyprbd1a.wav misc/lasfly.wav"
+/* precache */ ""
 	},
 
 /*QUAKED weapon_railgun (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
 	{
 		"weapon_railgun", 
-		Pickup_Weapon,
+		Pickup_Spear,													// Changed so that the railgun spawns are spear spawns
 		Use_Weapon,
 		Drop_Weapon,
 		Weapon_Railgun,
-		"misc/w_pkup.wav",
-		"models/weapons/g_rail/tris.md2", EF_ROTATE,
+		"morrowind/SpearPickup.wav",									// Changed so that the railgun pickup sound is the spear pickup sound
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,						// Changed so that the railgun model is the spear model
 		"models/weapons/v_rail/tris.md2",
-/* icon */		"w_railgun",
-/* pickup */	"Railgun",
+/* icon */		"anum_6",												// Changed so that the railgun icon is the spear icon
+/* pickup */	"Spear",												// Changed so that the railgun name is "Spear" on pickup
 		0,
 		1,
 		"Slugs",
@@ -1494,22 +1845,22 @@ always owned, never in the world
 		WEAP_RAILGUN,
 		NULL,
 		0,
-/* precache */ "weapons/rg_hum.wav"
+/* precache */ ""
 	},
 
 /*QUAKED weapon_bfg (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
 	{
 		"weapon_bfg",
-		Pickup_Weapon,
+		Pickup_Spear,													// Changed so that the BFG spawns are spear spawns
 		Use_Weapon,
 		Drop_Weapon,
 		Weapon_BFG,
-		"misc/w_pkup.wav",
-		"models/weapons/g_bfg/tris.md2", EF_ROTATE,
-		"models/weapons/v_bfg/tris.md2",
-/* icon */		"w_bfg",
-/* pickup */	"BFG10K",
+		"morrowind/SpearPickup.wav",									// Changed so that the BFG pickup sound is the spear pickup sound
+		"models/weapons/g_bat/tris.md2", EF_ROTATE,						// Changed so that the BFG model is the spear model
+		"models/weapons/v_rail/tris.md2",
+/* icon */		"anum_6",												// Changed so that the BFG icon is the spear icon
+/* pickup */	"Spear",												// Changed so that the BFG name is "Spear" on pickup
 		0,
 		50,
 		"Cells",
@@ -1532,18 +1883,18 @@ always owned, never in the world
 		NULL,
 		Drop_Ammo,
 		NULL,
-		"misc/am_pkup.wav",
-		"models/items/ammo/shells/medium/tris.md2", 0,
+		"morrowind/ArrowPickup.wav",										// Changed to replace the shells pickup sound with the arrows pickup sound
+		"models/items/pack/tris.md2", EF_ROTATE,							// Changed to replace the shells model is the arrows model
 		NULL,
-/* icon */		"a_shells",
-/* pickup */	"Shells",
+/* icon */		"i_pack",													// Changed to replace the shells icon with the arrows icon
+/* pickup */	"Arrows",													// Changed to replace the shells pickup name with arrows pickup name
 /* width */		3,
 		10,
 		NULL,
 		IT_AMMO,
 		0,
 		NULL,
-		AMMO_SHELLS,
+		AMMO_ARROWS,														// Changed to replace the shells spawns with arrow spawns
 /* precache */ ""
 	},
 
@@ -1551,15 +1902,15 @@ always owned, never in the world
 */
 	{
 		"ammo_bullets",
-		Pickup_Ammo,
+		Pickup_Potion,																// Changed to replace bullet spawns with potion spawns
 		NULL,
 		Drop_Ammo,
 		NULL,
-		"misc/am_pkup.wav",
-		"models/items/ammo/bullets/medium/tris.md2", 0,
+		"morrowind/PotionPickup.wav",												// Changed to replace bullet pickup sound with potion pickup sound
+		"models/items/potion/tris.md2", 0,											// Changed to replace bullet model with potion model
 		NULL,
-/* icon */		"a_bullets",
-/* pickup */	"Bullets",
+/* icon */		"i_pack",															// Changed to replace bullet icon with potion icon
+/* pickup */	"Magicka Potion",													// Changed to replace bullet pickup name with potion pickup name
 /* width */		3,
 		50,
 		NULL,
@@ -1578,18 +1929,18 @@ always owned, never in the world
 		NULL,
 		Drop_Ammo,
 		NULL,
-		"misc/am_pkup.wav",
-		"models/items/ammo/cells/medium/tris.md2", 0,
+		"morrowind/ArrowPickup.wav",												// Changed to replace cell pickup sound with arrows pickup sound
+		"models/items/pack/tris.md2", EF_ROTATE,									// Changed to replace cell model with arrows model
 		NULL,
-/* icon */		"a_cells",
-/* pickup */	"Cells",
+/* icon */		"i_pack",															// Changed to replace cell icon with arrows icon
+/* pickup */	"Arrows",															// Changed to replace cell pickup name with arrows pickup name
 /* width */		3,
 		50,
 		NULL,
 		IT_AMMO,
 		0,
 		NULL,
-		AMMO_CELLS,
+		AMMO_ARROWS,																// Changed to replace cell spawns with arrow spawns
 /* precache */ ""
 	},
 
@@ -1597,15 +1948,15 @@ always owned, never in the world
 */
 	{
 		"ammo_rockets",
-		Pickup_Ammo,
+		Pickup_Potion,																// Changed to replace rocket spawns with potion spawns
 		NULL,
 		Drop_Ammo,
 		NULL,
-		"misc/am_pkup.wav",
-		"models/items/ammo/rockets/medium/tris.md2", 0,
+		"morrowind/PotionPickup.wav",												// Changed to replace rocket pickup sound with potion pickup sound
+		"models/items/potion/tris.md2", 0,											// Changed to replace rocket model with potion model
 		NULL,
-/* icon */		"a_rockets",
-/* pickup */	"Rockets",
+/* icon */		"i_pack",															// Changed to replace rocket icon with potion icon
+/* pickup */	"Magicka Potion",													// Changed to replace rocket pickup name with potion pickup name
 /* width */		3,
 		5,
 		NULL,
@@ -1620,15 +1971,15 @@ always owned, never in the world
 */
 	{
 		"ammo_slugs",
-		Pickup_Ammo,
+		Pickup_Potion,																// Changed to replace slugs spawns with potion spawns
 		NULL,
 		Drop_Ammo,
 		NULL,
-		"misc/am_pkup.wav",
-		"models/items/ammo/slugs/medium/tris.md2", 0,
+		"morrowind/PotionPickup.wav",												// Changed to replace slugs pickup sound with potion pickup sound
+		"models/items/potion/tris.md2", 0,											// Changed to replace slugs model with potion model
 		NULL,
-/* icon */		"a_slugs",
-/* pickup */	"Slugs",
+/* icon */		"i_pack",															// Changed to replace slugs icon with potion icon
+/* pickup */	"Magicka Potion",													// Changed to replace slugs pickup name with potion pickup name
 /* width */		3,
 		10,
 		NULL,
@@ -1636,6 +1987,29 @@ always owned, never in the world
 		0,
 		NULL,
 		AMMO_SLUGS,
+/* precache */ ""
+	},
+
+	/*QUAKED ammo_arrows (.3 .3 1) (-16 -16 -16) (16 16 16)
+*/
+	{
+		"ammo_arrows",
+		Pickup_Ammo,
+		NULL,
+		Drop_Ammo,
+		NULL,
+		"morrowind/ArrowPickup.wav",
+		"models/items/pack/tris.md2", EF_ROTATE,
+		NULL,
+/* icon */		"a_blaster",
+/* pickup */	"Arrows",
+/* width */		3,
+		10,
+		NULL,
+		IT_AMMO,
+		0,
+		NULL,
+		AMMO_ARROWS,
 /* precache */ ""
 	},
 
@@ -1833,15 +2207,62 @@ gives +1 to maximum health
 */
 	{
 		"item_pack",
-		Pickup_Pack,
+		Pickup_Book,																			// Changed to replace item pack spawns with skill book spawns
 		NULL,
 		NULL,
 		NULL,
-		"items/pkup.wav",
-		"models/items/pack/tris.md2", EF_ROTATE,
+		"morrowind/BookPickup.wav",																// Changed to replace item pack pickup sound with skill book pickup sound
+		"models/items/ammo/bullets/medium/tris.md2", EF_ROTATE,									// Changed to replace item pack model with skill book model
 		NULL,
 /* icon */		"i_pack",
-/* pickup */	"Ammo Pack",
+/* pickup */	"Skill Book",																	// Changed to replace item pack pickup name with skill book pickup name
+/* width */		2,
+		180,
+		NULL,
+		0,
+		0,
+		NULL,
+		0,
+/* precache */ ""
+	},
+
+/*QUAKED magicka_potion (.3 .3 1) (-16 -16 -16) (16 16 16)										// Addition of the magicka potion item
+*/
+	{
+		"item_potion",																			// Item name on the map
+		Pickup_Potion,																			// The pickup function
+		NULL,
+		NULL,
+		NULL,
+		"morrowind/PotionPickup.wav",															// The pickup sound
+		"models/items/potion/tris.md2", EF_ROTATE,												// The model
+		NULL,
+/* icon */		"i_pack",																		// The icon
+/* pickup */	"Magicka Potion",																// The item name
+/* width */		2,
+		180,
+		NULL,
+		0,
+		0,
+		NULL,
+		0,
+/* precache */ ""
+	},
+
+/*QUAKED skill_book (.3 .3 1) (-16 -16 -16) (16 16 16)											// Addition of the skill book item
+*/
+
+	{
+		"item_book",																			// Item name on the map
+		Pickup_Book,																			// The pickup function
+		NULL,
+		NULL,
+		NULL,
+		"morrowind/BookPickup.wav",																// The pickup sound
+		"models/items/c_head/tris.md2", EF_ROTATE,												// The model
+		NULL,
+/* icon */		"i_pack",																		// The icon
+/* pickup */	"Skill Book",																	// The item name
 /* width */		2,
 		180,
 		NULL,
