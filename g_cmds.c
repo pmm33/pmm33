@@ -888,12 +888,12 @@ void Cmd_Potion (edict_t *ent)																		// Custom command for the player
 
 	if (ent->client->pers.potions <= 0)																// If the player has no potions left
 	{
-		gi.dprintf("No Potions Left\n");															// Print that the player has no potions left
+		gi.centerprintf(ent, "No Potions Left\n");													// Print that the player has no potions left
 		return;																						// End the command
 	}
 
 	ent->client->pers.potions--;																	// Use a potion up
-	ent->client->pers.magickaregen = 5;																// Set the magicka regeneration timer to 5 seconds
+	ent->client->pers.magickaregen = 4.9;															// Set the magicka regeneration timer to 5 seconds
 	gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/PotionDrink.wav"), 1, ATTN_NORM, 0);			// Play the drink potion sound
 	gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/MagickaRestore.wav"), 1, ATTN_NORM, 0);		// Play the magicka regeneration sound
 }
@@ -904,6 +904,32 @@ void Cmd_Talk (edict_t *ent)											// Custom command for the player to talk
 		return;															// End the command
 
 	ClientTalk(ent, rand() % 14);										// Call ClientTalk with a random number
+}
+
+void Cmd_DisplayStats (edict_t *ent)
+{
+	if (!ent->client)
+		return;
+	gi.cprintf(ent, PRINT_HIGH, "Magicka: %i\n", ent->client->pers.magicka);
+	gi.cprintf(ent, PRINT_HIGH, "Potions: %i\n", ent->client->pers.potions);
+	if (ent->client->pers.weapon == FindItem("Fists"))
+		gi.cprintf(ent, PRINT_HIGH, "Hand-to-Hand: %i\n", (int)ent->client->pers.handtohand);
+	else if (ent->client->pers.weapon == FindItem("Sword"))
+		gi.cprintf(ent, PRINT_HIGH, "Long Blade: %i\n", (int)ent->client->pers.longblade);
+	else if (ent->client->pers.weapon == FindItem("Dagger"))
+		gi.cprintf(ent, PRINT_HIGH, "Short Blade: %i\n", (int)ent->client->pers.shortblade);
+	else if (ent->client->pers.weapon == FindItem("Axe"))
+		gi.cprintf(ent, PRINT_HIGH, "Axes: %i\n", (int)ent->client->pers.axe);
+	else if (ent->client->pers.weapon == FindItem("Mace"))
+		gi.cprintf(ent, PRINT_HIGH, "Blunt: %i\n", (int)ent->client->pers.blunt);
+	else if (ent->client->pers.weapon == FindItem("Spear"))
+		gi.cprintf(ent, PRINT_HIGH, "Spears: %i\n", (int)ent->client->pers.spear);
+	else if (ent->client->pers.weapon == FindItem("Bow"))
+		gi.cprintf(ent, PRINT_HIGH, "Marksman: %i\n", (int)ent->client->pers.marksman);
+	else if (ent->client->pers.weapon == FindItem("Fireball"))
+		gi.cprintf(ent, PRINT_HIGH, "Destruction: %i\n", (int)ent->client->pers.destruction);
+	gi.cprintf(ent, PRINT_HIGH, "Acrobatics Skill: %i\n", (int)ent->client->pers.acrobatics);
+	
 }
 
 
@@ -998,6 +1024,8 @@ void ClientCommand (edict_t *ent)
 		Cmd_Potion (ent);
 	else if (Q_stricmp(cmd, "talk") == 0)
 		Cmd_Talk (ent);
+	else if (Q_stricmp(cmd, "displaystats") == 0)
+		Cmd_DisplayStats (ent);
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }

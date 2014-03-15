@@ -607,7 +607,7 @@ void Use_Weapon (edict_t *ent, gitem_t *item)
 	else if (item == FindItem("Mace"))
 		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/MacePickup.wav"), 1, ATTN_NORM, 0);
 	else if (item == FindItem("Spear"))
-		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/SpearPickupPickup.wav"), 1, ATTN_NORM, 0);
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/SpearPickup.wav"), 1, ATTN_NORM, 0);
 	else if (item == FindItem("Bow"))
 		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/BowPickup.wav"), 1, ATTN_NORM, 0);
 
@@ -2077,7 +2077,7 @@ void weapon_fireball_fire(edict_t *ent, vec3_t g_offset, int damage)
 	if (ent->client->pers.magicka < 5)															// If the player does not have enough magicka left to cast the spell
 	{
 		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/FireballFail.wav"), 1, ATTN_NORM, 0);	// Play the failed cast sound
-		gi.dprintf("Not Enough Magicka\n");														// Print that the player does not have enough magicka
+		gi.centerprintf(ent, "Not Enough Magicka\n");											// Print that the player does not have enough magicka
 		ent->client->ps.gunframe = 6;
 		if (level.time >= ent->pain_debounce_time)
 		{
@@ -2099,7 +2099,7 @@ void weapon_fireball_fire(edict_t *ent, vec3_t g_offset, int damage)
 			if ((ent->client->pers.destruction - (int)ent->client->pers.destruction) * 100 >= (int)ent->client->pers.destruction - 25)		// If the skill levels
 			{
 				ent->client->pers.destruction = ent->client->pers.destruction + (1 - (ent->client->pers.destruction - (int)ent->client->pers.destruction));	// Increase the skill to the next level
-				gi.dprintf("Your Destruction Skill Has Increased To %i\n", (int)ent->client->pers.destruction);			// Print that the player's skill has increased
+				gi.centerprintf(ent, "Your Destruction Has Increased To %i\n", (int)ent->client->pers.destruction);			// Print that the player's skill has increased
 				gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
 			}
 		}
@@ -2107,7 +2107,7 @@ void weapon_fireball_fire(edict_t *ent, vec3_t g_offset, int damage)
 	else																									// If the cast has failed
 	{
 		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/FireballFail.wav"), 1, ATTN_NORM, 0);				// Play the failed cast sound
-		gi.dprintf("The Cast Failed\n");																		// Print that the cast failed
+		gi.centerprintf(ent, "The Cast Failed\n");																		// Print that the cast failed
 		return;
 	}
 

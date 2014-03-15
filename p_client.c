@@ -5,6 +5,8 @@ void ClientUserinfoChanged (edict_t *ent, char *userinfo);
 
 void SP_misc_teleporter_dest (edict_t *ent);
 
+void Cmd_DisplayStats (edict_t *ent);
+
 //
 // Gross, ugly, disgustuing hack section
 //
@@ -1626,6 +1628,9 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	int		i, j;
 	pmove_t	pm;
 	vec3_t forward, right, up;
+	char	entry[1024];
+	char	string[1400];
+	int		stringlength;
 
 	level.current_entity = ent;
 	client = ent->client;
@@ -1711,14 +1716,14 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			VectorMA(ent->velocity, client->pers.acrobatics * (client->pers.acrobatics - 15), up, ent->velocity);
 			
 			
-			if (client->pers.acrobatics < 100)																				// If the player is not skill capped in acrobatics
+			if (ent->client->pers.acrobatics < 100)																				// If the player is not skill capped in acrobatics
 			{
-				client->pers.acrobatics = (client->pers.acrobatics + 0.01);													// Add 0.01 to the player's acrobatics skill
-				if ((client->pers.acrobatics - (int)client->pers.acrobatics) * 100 >= (int)client->pers.acrobatics - 15)	// If the player skills up
+				ent->client->pers.acrobatics = (ent->client->pers.acrobatics + 0.01);													// Add 0.01 to the player's acrobatics skill
+				if ((ent->client->pers.acrobatics - (int)ent->client->pers.acrobatics) * 100 >= (int)ent->client->pers.acrobatics - 15)	// If the player skills up
 				{
-					client->pers.acrobatics = client->pers.acrobatics + (1 - (client->pers.acrobatics - (int)client->pers.acrobatics));  // Increase the skill to the next integer
-					gi.dprintf("Your Acrobatics Skill Has Increased To %i\n", (int)client->pers.acrobatics);				// Print that the player's skill has increased
-					gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
+					ent->client->pers.acrobatics = ent->client->pers.acrobatics + (1 - (ent->client->pers.acrobatics - (int)ent->client->pers.acrobatics));  // Increase the skill to the next integer
+					gi.centerprintf(ent, "Your Acrobatics Has Increased To %i\n", (int)ent->client->pers.acrobatics);		// Print that the player's skill has increased
+					gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);							// Play skill up sound
 				}
 			}
 			
@@ -1813,8 +1818,9 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 	if (client->pers.magickaregen > 0)											// If the player has time left on their magicka regen effect from a potion
 	{
-		client->pers.magicka = client->pers.magicka + 1;						// Increase the player's magicka by 1 point
 		client->pers.magickaregen = client->pers.magickaregen - 0.1;			// Remove 0.1 seconds from the magicka regen timer
+		if (client->pers.magicka < client->pers.max_magicka)					// If the player's max magicka is less than the cap
+			client->pers.magicka = client->pers.magicka + 1;					// Increase the player's magicka by 1 point
 	}
 
 	if (client->pers.burning > 0)												// If the player has time left on their burning effect from a fireball
@@ -1823,10 +1829,13 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		if (client->pers.burningcounter >= 1);									// If the burning counter reaches 1
 		{
 			client->pers.burningcounter = client->pers.burningcounter - 1;		// Decrease the burning counter by 1
-			T_Damage(ent, ent->client->pers.burner, ent->client->pers.burner, NULL, ent->s.origin, NULL, 1, 0, DAMAGE_ENERGY, MOD_BURNING);		// Deal burning damage
+			T_Damage (ent, ent->client->pers.burner, ent->client->pers.burner, vec3_origin, ent->s.origin, vec3_origin, 1, 0, 0, MOD_BURNING);
+			// T_Damage(ent, ent->client->pers.burner, ent->client->pers.burner, NULL, ent->s.origin, NULL, 1, 0, DAMAGE_ENERGY, MOD_BURNING);		// Deal burning damage
 		}
 		client->pers.burning = client->pers.burning - 0.1;						// Remove 0.1 seconds from the burning timer
 	}
+
+	Cmd_DisplayStats(ent);
 }
 
 

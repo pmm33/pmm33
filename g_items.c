@@ -383,7 +383,7 @@ qboolean Pickup_Book(edict_t *ent, edict_t *other)
 			if (other->client->pers.acrobatics < 100)			// If the skill is not capped
 			{
 				other->client->pers.acrobatics = other->client->pers.acrobatics + (1 - (other->client->pers.acrobatics - (int)other->client->pers.acrobatics)) + 4;		// Increase the skill by 5 levels
-				gi.dprintf("Your Acrobatics Skill Has Increased To %i\n", (int)other->client->pers.acrobatics);															// Print that the player's skill has increased
+				gi.centerprintf(other, "Your Acrobatics Has Increased To %i\n", (int)other->client->pers.acrobatics);															// Print that the player's skill has increased
 				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
 			}
 		}
@@ -392,7 +392,7 @@ qboolean Pickup_Book(edict_t *ent, edict_t *other)
 			if (other->client->pers.handtohand < 100)			// If the skill is not capped
 			{
 				other->client->pers.handtohand = other->client->pers.handtohand + (1 - (other->client->pers.handtohand - (int)other->client->pers.handtohand)) + 4;		// Increase the skill by 5 levels
-				gi.dprintf("Your Hand-to-Hand Skill Has Increased To %i\n", (int)other->client->pers.handtohand);														// Print that the player's skill has increased
+				gi.centerprintf(other, "Your Hand-to-Hand Has Increased To %i\n", (int)other->client->pers.handtohand);														// Print that the player's skill has increased
 				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
 			}
 		}
@@ -401,7 +401,7 @@ qboolean Pickup_Book(edict_t *ent, edict_t *other)
 			if (other->client->pers.longblade < 100)			// If the skill is not capped
 			{
 				other->client->pers.longblade = other->client->pers.longblade + (1 - (other->client->pers.longblade - (int)other->client->pers.longblade)) + 4;			// Increase the skill by 5 levels
-				gi.dprintf("Your Long Blade Skill Has Increased To %i\n", (int)other->client->pers.longblade);															// Print that the player's skill has increased
+				gi.centerprintf(other, "Your Long Blade Has Increased To %i\n", (int)other->client->pers.longblade);															// Print that the player's skill has increased
 				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
 			}
 		}
@@ -410,7 +410,7 @@ qboolean Pickup_Book(edict_t *ent, edict_t *other)
 			if (other->client->pers.shortblade < 100)			// If the skill is not capped
 			{
 				other->client->pers.shortblade = other->client->pers.shortblade + (1 - (other->client->pers.shortblade - (int)other->client->pers.shortblade)) + 4;		// Increase the skill by 5 levels
-				gi.dprintf("Your Short Blade Skill Has Increased To %i\n", (int)other->client->pers.shortblade);														// Print that the player's skill has increased
+				gi.centerprintf(other, "Your Short Blade Has Increased To %i\n", (int)other->client->pers.shortblade);														// Print that the player's skill has increased
 				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
 			}
 		}
@@ -419,7 +419,7 @@ qboolean Pickup_Book(edict_t *ent, edict_t *other)
 			if (other->client->pers.axe < 100)					// If the skill is not capped
 			{
 				other->client->pers.axe = other->client->pers.axe + (1 - (other->client->pers.axe - (int)other->client->pers.axe)) + 4;									// Increase the skill by 5 levels
-				gi.dprintf("Your Axe Skill Has Increased To %i\n", (int)other->client->pers.axe);																		// Print that the player's skill has increased
+				gi.centerprintf(other, "Your Axe Skill Has Increased To %i\n", (int)other->client->pers.axe);																		// Print that the player's skill has increased
 				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
 			}
 		}
@@ -428,7 +428,7 @@ qboolean Pickup_Book(edict_t *ent, edict_t *other)
 			if (other->client->pers.blunt < 100)				// If the skill is not capped
 			{
 				other->client->pers.blunt = other->client->pers.blunt + (1 - (other->client->pers.blunt - (int)other->client->pers.blunt)) + 4;							// Increase the skill by 5 levels
-				gi.dprintf("Your Blunt Skill Has Increased To %i\n", (int)other->client->pers.blunt);																	// Print that the player's skill has increased
+				gi.centerprintf(other, "Your Blunt Skill Has Increased To %i\n", (int)other->client->pers.blunt);																	// Print that the player's skill has increased
 				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
 			}
 		}
@@ -437,7 +437,7 @@ qboolean Pickup_Book(edict_t *ent, edict_t *other)
 			if (other->client->pers.spear < 100)				// If the skill is not capped
 			{
 				other->client->pers.spear = other->client->pers.spear + (1 - (other->client->pers.spear - (int)other->client->pers.spear)) + 4;							// Increase the skill by 5 levels
-				gi.dprintf("Your Spear Skill Has Increased To %i\n", (int)other->client->pers.spear);																	// Print that the player's skill has increased
+				gi.centerprintf(other, "Your Spear Skill Has Increased To %i\n", (int)other->client->pers.spear);																	// Print that the player's skill has increased
 				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
 			}
 		}
@@ -446,7 +446,7 @@ qboolean Pickup_Book(edict_t *ent, edict_t *other)
 			if (other->client->pers.marksman < 100)				// If the skill is not capped
 			{
 				other->client->pers.marksman = other->client->pers.marksman + (1 - (other->client->pers.marksman - (int)other->client->pers.marksman)) + 4;				// Increase the skill by 5 levels
-				gi.dprintf("Your Marksman Skill Has Increased To %i\n", (int)other->client->pers.marksman);																// Print that the player's skill has increased
+				gi.centerprintf(other, "Your Marksman Skill Has Increased To %i\n", (int)other->client->pers.marksman);																// Print that the player's skill has increased
 				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
 			}
 		}
@@ -455,7 +455,7 @@ qboolean Pickup_Book(edict_t *ent, edict_t *other)
 			if (other->client->pers.destruction < 100)			// If the skill is not capped
 			{
 				other->client->pers.destruction = other->client->pers.destruction + (1 - (other->client->pers.destruction - (int)other->client->pers.destruction)) + 4;	// Increase the skill by 5 levels
-				gi.dprintf("Your Destruction Skill Has Increased To %i\n", (int)other->client->pers.destruction);														// Print that the player's skill has increased
+				gi.centerprintf(other, "Your Destruction Has Increased To %i\n", (int)other->client->pers.destruction);														// Print that the player's skill has increased
 				gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);																		// Play skill up sound
 			}
 		}

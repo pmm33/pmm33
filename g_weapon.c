@@ -1045,7 +1045,7 @@ void fire_melee (edict_t *self, vec3_t start, vec3_t direction, float range, int
 					if ((self->client->pers.handtohand - (int)self->client->pers.handtohand) * 100 >= (int)self->client->pers.handtohand - 25)		// If the skill levels
 					{
 						self->client->pers.handtohand = self->client->pers.handtohand + (1 - (self->client->pers.handtohand - (int)self->client->pers.handtohand));	// Increase the skill to the next level
-						gi.dprintf("Your Hand-to-Hand Skill Has Increased To %i\n", (int)self->client->pers.handtohand);		// Print that the player's skill has increased
+						gi.centerprintf(self, "Your Hand-to-Hand Has Increased To %i\n", (int)self->client->pers.handtohand);		// Print that the player's skill has increased
 						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
 					}
 				}
@@ -1062,7 +1062,7 @@ void fire_melee (edict_t *self, vec3_t start, vec3_t direction, float range, int
 					if ((self->client->pers.longblade - (int)self->client->pers.longblade) * 100 >= (int)self->client->pers.longblade - 25)		// If the skill levels
 					{
 						self->client->pers.longblade = self->client->pers.longblade + (1 - (self->client->pers.longblade - (int)self->client->pers.longblade));	// Increase the skill to the next level
-						gi.dprintf("Your Long Blade Skill Has Increased To %i\n", (int)self->client->pers.longblade);			// Print that the player's skill has increased
+						gi.centerprintf(self, "Your Long Blade Has Increased To %i\n", (int)self->client->pers.longblade);			// Print that the player's skill has increased
 						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
 					}
 				}
@@ -1079,7 +1079,7 @@ void fire_melee (edict_t *self, vec3_t start, vec3_t direction, float range, int
 					if ((self->client->pers.shortblade - (int)self->client->pers.shortblade) * 100 >= (int)self->client->pers.shortblade - 25)		// If the skill levels
 					{
 						self->client->pers.shortblade = self->client->pers.shortblade + (1 - (self->client->pers.shortblade - (int)self->client->pers.shortblade));	// Increase the skill to the next level
-						gi.dprintf("Your Short Blade Skill Has Increased To %i\n", (int)self->client->pers.shortblade);			// Print that the player's skill has increased
+						gi.centerprintf(self, "Your Short Blade Has Increased To %i\n", (int)self->client->pers.shortblade);			// Print that the player's skill has increased
 						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
 					}
 				}
@@ -1096,7 +1096,7 @@ void fire_melee (edict_t *self, vec3_t start, vec3_t direction, float range, int
 					if ((self->client->pers.axe - (int)self->client->pers.axe) * 100 >= (int)self->client->pers.axe - 25)		// If the skill levels
 					{
 						self->client->pers.axe = self->client->pers.axe + (1 - (self->client->pers.axe - (int)self->client->pers.axe));	// Increase the skill to the next level
-						gi.dprintf("Your Axe Skill Has Increased To %i\n", (int)self->client->pers.axe);						// Print that the player's skill has increased
+						gi.centerprintf(self, "Your Axe Skill Has Increased To %i\n", (int)self->client->pers.axe);						// Print that the player's skill has increased
 						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
 					}
 				}
@@ -1113,7 +1113,7 @@ void fire_melee (edict_t *self, vec3_t start, vec3_t direction, float range, int
 					if ((self->client->pers.blunt - (int)self->client->pers.blunt) * 100 >= (int)self->client->pers.blunt - 25)		// If the skill levels
 					{
 						self->client->pers.blunt = self->client->pers.blunt + (1 - (self->client->pers.blunt - (int)self->client->pers.blunt));	// Increase the skill to the next level
-						gi.dprintf("Your Blunt Skill Has Increased To %i\n", (int)self->client->pers.blunt);					// Print that the player's skill has increased
+						gi.centerprintf(self, "Your Blunt Skill Has Increased To %i\n", (int)self->client->pers.blunt);					// Print that the player's skill has increased
 						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
 					}
 				}
@@ -1130,7 +1130,7 @@ void fire_melee (edict_t *self, vec3_t start, vec3_t direction, float range, int
 					if ((self->client->pers.spear - (int)self->client->pers.spear) * 100 >= (int)self->client->pers.spear - 25)		// If the skill levels
 					{
 						self->client->pers.spear = self->client->pers.spear + (1 - (self->client->pers.spear - (int)self->client->pers.spear));	// Increase the skill to the next level
-						gi.dprintf("Your Spear Skill Has Increased To %i\n", (int)self->client->pers.spear);					// Print that the player's skill has increased
+						gi.centerprintf(self, "Your Spear Skill Has Increased To %i\n", (int)self->client->pers.spear);					// Print that the player's skill has increased
 						gi.sound(self, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
 					}
 				}
@@ -1213,7 +1213,7 @@ void arrow_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *sur
 					if ((self->owner->client->pers.marksman - (int)self->owner->client->pers.marksman) * 100 >= (int)self->owner->client->pers.marksman - 25)		// If the skill levels
 					{
 						self->owner->client->pers.marksman = self->owner->client->pers.marksman + (1 - (self->owner->client->pers.marksman - (int)self->owner->client->pers.marksman));	// Increase the skill to the next level
-						gi.dprintf("Your Marksman Skill Has Increased To %i\n", (int)self->owner->client->pers.marksman);			// Print that the player's skill has increased
+						gi.centerprintf(self->owner, "Your Marksman Skill Has Increased To %i\n", (int)self->owner->client->pers.marksman);			// Print that the player's skill has increased
 						gi.sound(self->owner, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);				// Play skill up sound
 					}
 				}
