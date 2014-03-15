@@ -1,5 +1,5 @@
 // g_ai.c
-
+//TESTING
 #include "g_local.h"
 
 qboolean FindTarget (edict_t *self);
