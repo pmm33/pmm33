@@ -84,7 +84,8 @@ typedef enum
 	AMMO_ROCKETS,
 	AMMO_GRENADES,
 	AMMO_CELLS,
-	AMMO_SLUGS
+	AMMO_SLUGS,
+	AMMO_ARROWS								// Define arrows ammo
 } ammo_t;
 
 
@@ -211,6 +212,14 @@ typedef struct
 #define WEAP_HYPERBLASTER		9 
 #define WEAP_RAILGUN			10
 #define WEAP_BFG				11
+#define WEAP_FISTS				12
+#define WEAP_SWORD				13
+#define WEAP_DAGGER				14
+#define WEAP_AXE				15
+#define WEAP_MACE				16
+#define WEAP_SPEAR				17
+#define WEAP_BOW				18
+#define WEAP_FIREBALL			19
 
 typedef struct gitem_s
 {
@@ -305,6 +314,7 @@ typedef struct
 	int			sound2_entity_framenum;
 
 	int			pic_health;
+	int			pic_magicka;
 
 	int			total_secrets;
 	int			found_secrets;
@@ -480,6 +490,15 @@ extern	int	body_armor_index;
 #define MOD_HIT				32
 #define MOD_TARGET_BLASTER	33
 #define MOD_FRIENDLY_FIRE	0x8000000
+#define MOD_FISTS			34
+#define MOD_SWORD			35
+#define MOD_DAGGER			36
+#define MOD_AXE				37
+#define MOD_MACE			38									// These are the means of death for all the custom weapons
+#define MOD_SPEAR			39
+#define MOD_BOW				40
+#define MOD_FIREBALL		41
+#define MOD_BURNING			42
 
 extern	int	meansOfDeath;
 
@@ -715,6 +734,9 @@ void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage);
 void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick);
 void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
+void fire_melee (edict_t *self, vec3_t start, vec3_t dir, float range, int kick, int damage, int weapontype, int mod);
+void fire_bow (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed);
+void fire_fireball (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed);
 
 //
 // g_ptrail.c
@@ -821,7 +843,26 @@ typedef struct
 	// values saved and restored from edicts when changing levels
 	int			health;
 	int			max_health;
+	int			magicka;			// Addition of magicka resource for use as fireball ammo
+	int			max_magicka;		// Addition of the max amount of magicka a player can have
 	int			savedFlags;
+
+	float		acrobatics;			// Addition of acrobatics skill for jumping
+	float		handtohand;			// Addition of hand-to-hand skill for fists
+	float		longblade;			// Addition of long blade skill for sword
+	float		shortblade;			// Addition of short blade skill for dagger
+	float		axe;				// Addition of axe skill for axe
+	float		blunt;				// Addition of blunt skill for mace
+	float		spear;				// Addition of spear skill for spear
+	float		marksman;			// Addition of marksman skill for bow
+	float		destruction;		// Addition of destruction skill for fireball magic
+
+	float		magickaregen;		// Addition of timer for magicka regen when using a potion
+	float		burning;			// Addition of timer for burning when hit by a fireball
+	float		burningcounter;		// Addition of counter to track how many ticks of burning have occurred (10 ticks for 1 point of damage)
+	edict_t		*burner;			// Addition of pointer to the last person to burn the player (used for mod)
+
+	int			potions;			// Addition of potion counter for amount of potions the player has
 
 	int			selected_item;
 	int			inventory[MAX_ITEMS];
@@ -833,6 +874,7 @@ typedef struct
 	int			max_grenades;
 	int			max_cells;
 	int			max_slugs;
+	int			max_arrows;			// Addition of arrows for bows
 
 	gitem_t		*weapon;
 	gitem_t		*lastweapon;
@@ -1038,6 +1080,18 @@ struct edict_s
 	int			gib_health;
 	int			deadflag;
 	qboolean	show_hostile;
+
+	int			magicka;
+
+	float		acrobatics;
+	float		handtohand;
+	float		sword;
+	float		dagger;
+	float		axe;
+	float		mace;
+	float		spear;
+	float		marksman;
+	float		destruction;
 
 	float		powerarmor_time;
 

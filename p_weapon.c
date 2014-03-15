@@ -102,6 +102,7 @@ qboolean Pickup_Weapon (edict_t *ent, edict_t *other)
 	gitem_t		*ammo;
 
 	index = ITEM_INDEX(ent->item);
+	gi.dprintf("%i\n", index);
 
 	if ( ( ((int)(dmflags->value) & DF_WEAPONS_STAY) || coop->value) 
 		&& other->client->pers.inventory[index])
@@ -143,6 +144,287 @@ qboolean Pickup_Weapon (edict_t *ent, edict_t *other)
 	return true;
 }
 
+qboolean Pickup_Melee_Weapon (edict_t *ent, edict_t *other)
+{
+	int			index;
+
+	index = ITEM_INDEX(ent->item);
+	gi.dprintf("%i\n", index);
+
+	if ( ( ((int)(dmflags->value) & DF_WEAPONS_STAY) || coop->value) 
+		&& other->client->pers.inventory[index])
+	{
+		if (!(ent->spawnflags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
+			return false;	// leave the weapon for others to pickup
+	}
+
+	other->client->pers.inventory[index]++;
+
+	if (!(ent->spawnflags & DROPPED_ITEM) )
+	{
+		if (! (ent->spawnflags & DROPPED_PLAYER_ITEM) )
+		{
+			if (deathmatch->value)
+			{
+				if ((int)(dmflags->value) & DF_WEAPONS_STAY)
+					ent->flags |= FL_RESPAWN;
+				else
+					SetRespawn (ent, 30);
+			}
+			if (coop->value)
+				ent->flags |= FL_RESPAWN;
+		}
+	}
+
+	if (other->client->pers.weapon != ent->item && 
+		(other->client->pers.inventory[index] == 1) &&
+		( !deathmatch->value || other->client->pers.weapon == FindItem("blaster") ) )
+		other->client->newweapon = ent->item;
+
+	return true;
+}
+
+qboolean Pickup_Bow (edict_t *ent, edict_t *other)
+{
+	int			index;
+	gitem_t		*ammo;
+
+	index = 13;
+
+	if ( ( ((int)(dmflags->value) & DF_WEAPONS_STAY) || coop->value) 
+		&& other->client->pers.inventory[index])
+	{
+		if (!(ent->spawnflags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
+			return false;	// leave the weapon for others to pickup
+	}
+
+	other->client->pers.inventory[index]++;
+
+	if (!(ent->spawnflags & DROPPED_ITEM) )
+	{
+		// give them some ammo with it
+		ammo = FindItem (ent->item->ammo);
+		if ( (int)dmflags->value & DF_INFINITE_AMMO )
+			Add_Ammo (other, ammo, 1000);
+		else
+			Add_Ammo (other, ammo, ammo->quantity);
+
+		if (! (ent->spawnflags & DROPPED_PLAYER_ITEM) )
+		{
+			if (deathmatch->value)
+			{
+				if ((int)(dmflags->value) & DF_WEAPONS_STAY)
+					ent->flags |= FL_RESPAWN;
+				else
+					SetRespawn (ent, 30);
+			}
+			if (coop->value)
+				ent->flags |= FL_RESPAWN;
+		}
+	}
+
+	if (other->client->pers.weapon != ent->item && 
+		(other->client->pers.inventory[index] == 1) &&
+		( !deathmatch->value || other->client->pers.weapon == FindItem("blaster") ) )
+		other->client->newweapon = ent->item;
+
+	return true;
+}
+
+qboolean Pickup_Sword (edict_t *ent, edict_t *other)
+{
+	int			index;
+
+	index = 8;
+
+	if ( ( ((int)(dmflags->value) & DF_WEAPONS_STAY) || coop->value) 
+		&& other->client->pers.inventory[index])
+	{
+		if (!(ent->spawnflags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
+			return false;	// leave the weapon for others to pickup
+	}
+
+	other->client->pers.inventory[index]++;
+
+	if (!(ent->spawnflags & DROPPED_ITEM) )
+	{
+		if (! (ent->spawnflags & DROPPED_PLAYER_ITEM) )
+		{
+			if (deathmatch->value)
+			{
+				if ((int)(dmflags->value) & DF_WEAPONS_STAY)
+					ent->flags |= FL_RESPAWN;
+				else
+					SetRespawn (ent, 30);
+			}
+			if (coop->value)
+				ent->flags |= FL_RESPAWN;
+		}
+	}
+
+	if (other->client->pers.weapon != ent->item && 
+		(other->client->pers.inventory[index] == 1) &&
+		( !deathmatch->value || other->client->pers.weapon == FindItem("blaster") ) )
+		other->client->newweapon = ent->item;
+
+	return true;
+}
+
+qboolean Pickup_Dagger (edict_t *ent, edict_t *other)
+{
+	int			index;
+
+	index = 9;
+
+	if ( ( ((int)(dmflags->value) & DF_WEAPONS_STAY) || coop->value) 
+		&& other->client->pers.inventory[index])
+	{
+		if (!(ent->spawnflags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
+			return false;	// leave the weapon for others to pickup
+	}
+
+	other->client->pers.inventory[index]++;
+
+	if (!(ent->spawnflags & DROPPED_ITEM) )
+	{
+		if (! (ent->spawnflags & DROPPED_PLAYER_ITEM) )
+		{
+			if (deathmatch->value)
+			{
+				if ((int)(dmflags->value) & DF_WEAPONS_STAY)
+					ent->flags |= FL_RESPAWN;
+				else
+					SetRespawn (ent, 30);
+			}
+			if (coop->value)
+				ent->flags |= FL_RESPAWN;
+		}
+	}
+
+	if (other->client->pers.weapon != ent->item && 
+		(other->client->pers.inventory[index] == 1) &&
+		( !deathmatch->value || other->client->pers.weapon == FindItem("blaster") ) )
+		other->client->newweapon = ent->item;
+
+	return true;
+}
+
+qboolean Pickup_Axe (edict_t *ent, edict_t *other)
+{
+	int			index;
+
+	index = 10;
+
+	if ( ( ((int)(dmflags->value) & DF_WEAPONS_STAY) || coop->value) 
+		&& other->client->pers.inventory[index])
+	{
+		if (!(ent->spawnflags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
+			return false;	// leave the weapon for others to pickup
+	}
+
+	other->client->pers.inventory[index]++;
+
+	if (!(ent->spawnflags & DROPPED_ITEM) )
+	{
+		if (! (ent->spawnflags & DROPPED_PLAYER_ITEM) )
+		{
+			if (deathmatch->value)
+			{
+				if ((int)(dmflags->value) & DF_WEAPONS_STAY)
+					ent->flags |= FL_RESPAWN;
+				else
+					SetRespawn (ent, 30);
+			}
+			if (coop->value)
+				ent->flags |= FL_RESPAWN;
+		}
+	}
+
+	if (other->client->pers.weapon != ent->item && 
+		(other->client->pers.inventory[index] == 1) &&
+		( !deathmatch->value || other->client->pers.weapon == FindItem("blaster") ) )
+		other->client->newweapon = ent->item;
+
+	return true;
+}
+
+qboolean Pickup_Mace (edict_t *ent, edict_t *other)
+{
+	int			index;
+
+	index = 11;
+
+	if ( ( ((int)(dmflags->value) & DF_WEAPONS_STAY) || coop->value) 
+		&& other->client->pers.inventory[index])
+	{
+		if (!(ent->spawnflags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
+			return false;	// leave the weapon for others to pickup
+	}
+
+	other->client->pers.inventory[index]++;
+
+	if (!(ent->spawnflags & DROPPED_ITEM) )
+	{
+		if (! (ent->spawnflags & DROPPED_PLAYER_ITEM) )
+		{
+			if (deathmatch->value)
+			{
+				if ((int)(dmflags->value) & DF_WEAPONS_STAY)
+					ent->flags |= FL_RESPAWN;
+				else
+					SetRespawn (ent, 30);
+			}
+			if (coop->value)
+				ent->flags |= FL_RESPAWN;
+		}
+	}
+
+	if (other->client->pers.weapon != ent->item && 
+		(other->client->pers.inventory[index] == 1) &&
+		( !deathmatch->value || other->client->pers.weapon == FindItem("blaster") ) )
+		other->client->newweapon = ent->item;
+
+	return true;
+}
+
+qboolean Pickup_Spear (edict_t *ent, edict_t *other)
+{
+	int			index;
+
+	index = 12;
+
+	if ( ( ((int)(dmflags->value) & DF_WEAPONS_STAY) || coop->value) 
+		&& other->client->pers.inventory[index])
+	{
+		if (!(ent->spawnflags & (DROPPED_ITEM | DROPPED_PLAYER_ITEM) ) )
+			return false;	// leave the weapon for others to pickup
+	}
+
+	other->client->pers.inventory[index]++;
+
+	if (!(ent->spawnflags & DROPPED_ITEM) )
+	{
+		if (! (ent->spawnflags & DROPPED_PLAYER_ITEM) )
+		{
+			if (deathmatch->value)
+			{
+				if ((int)(dmflags->value) & DF_WEAPONS_STAY)
+					ent->flags |= FL_RESPAWN;
+				else
+					SetRespawn (ent, 30);
+			}
+			if (coop->value)
+				ent->flags |= FL_RESPAWN;
+		}
+	}
+
+	if (other->client->pers.weapon != ent->item && 
+		(other->client->pers.inventory[index] == 1) &&
+		( !deathmatch->value || other->client->pers.weapon == FindItem("blaster") ) )
+		other->client->newweapon = ent->item;
+
+	return true;
+}
 
 /*
 ===============
@@ -214,43 +496,43 @@ NoAmmoWeaponChange
 */
 void NoAmmoWeaponChange (edict_t *ent)
 {
-	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("slugs"))]
-		&&  ent->client->pers.inventory[ITEM_INDEX(FindItem("railgun"))] )
+	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("Arrows"))]								// If you have arrows
+		&&  ent->client->pers.inventory[ITEM_INDEX(FindItem("Bow"))] )								// And you have a bow
 	{
-		ent->client->newweapon = FindItem ("railgun");
+		ent->client->newweapon = FindItem ("Bow");													// Switch to the bow
 		return;
 	}
-	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("cells"))]
-		&&  ent->client->pers.inventory[ITEM_INDEX(FindItem("hyperblaster"))] )
+	if ( ent->client->pers.magicka >= 5 )															// If you have enough magicka to cast a spell
 	{
-		ent->client->newweapon = FindItem ("hyperblaster");
+		ent->client->newweapon = FindItem ("Fireball");												// Switch to fireball casting
 		return;
 	}
-	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("bullets"))]
-		&&  ent->client->pers.inventory[ITEM_INDEX(FindItem("chaingun"))] )
+	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("Spear"))] )								// If you have a spear
 	{
-		ent->client->newweapon = FindItem ("chaingun");
+		ent->client->newweapon = FindItem ("Spear");												// Switch to the spear
 		return;
 	}
-	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("bullets"))]
-		&&  ent->client->pers.inventory[ITEM_INDEX(FindItem("machinegun"))] )
+	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("Mace"))] )								// If you have a mace
 	{
-		ent->client->newweapon = FindItem ("machinegun");
+		ent->client->newweapon = FindItem ("Mace");													// Switch to the mace
 		return;
 	}
-	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("shells"))] > 1
-		&&  ent->client->pers.inventory[ITEM_INDEX(FindItem("super shotgun"))] )
+	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("Axe"))] )									// If you have an axe
 	{
-		ent->client->newweapon = FindItem ("super shotgun");
+		ent->client->newweapon = FindItem ("Axe");													// Switch to the axe
 		return;
 	}
-	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("shells"))]
-		&&  ent->client->pers.inventory[ITEM_INDEX(FindItem("shotgun"))] )
+	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("Sword"))] )								// If you have a sword
 	{
-		ent->client->newweapon = FindItem ("shotgun");
+		ent->client->newweapon = FindItem ("Sword");												// Switch to the sword
 		return;
 	}
-	ent->client->newweapon = FindItem ("blaster");
+	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("Dagger"))] )								// If you have a dagger
+	{
+		ent->client->newweapon = FindItem ("Dagger");												// Switch to the dagger
+		return;
+	}
+	ent->client->newweapon = FindItem ("Fists");													// Otherwise switch to your fists
 }
 
 /*
@@ -315,6 +597,19 @@ void Use_Weapon (edict_t *ent, gitem_t *item)
 			return;
 		}
 	}
+
+	if (item == FindItem("Sword"))
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/SwordPickup.wav"), 1, ATTN_NORM, 0);
+	else if (item == FindItem("Dagger"))
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/DaggerPickup.wav"), 1, ATTN_NORM, 0);
+	else if (item == FindItem("Axe"))
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/AxePickup.wav"), 1, ATTN_NORM, 0);							// These play a sound when the weapon is drawn
+	else if (item == FindItem("Mace"))
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/MacePickup.wav"), 1, ATTN_NORM, 0);
+	else if (item == FindItem("Spear"))
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/SpearPickup.wav"), 1, ATTN_NORM, 0);
+	else if (item == FindItem("Bow"))
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/BowPickup.wav"), 1, ATTN_NORM, 0);
 
 	// change to this weapon when down
 	ent->client->newweapon = item;
@@ -744,6 +1039,7 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 	int		damage;
 	float	damage_radius;
 	int		radius_damage;
+	int		i;
 
 	damage = 100 + (int)(random() * 20.0);
 	radius_damage = 120;
@@ -762,7 +1058,11 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 	VectorSet(offset, 8, 8, ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 	fire_rocket (ent, start, forward, damage, 650, damage_radius, radius_damage);
-
+	 for (i = 0; i < 10; i++)
+	{
+		fire_grenade (ent, start, forward, damage, 1000, 2.5, (damage + 40));
+	}
+	
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
 	gi.WriteShort (ent-g_edicts);
@@ -780,7 +1080,7 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 void Weapon_RocketLauncher (edict_t *ent)
 {
 	static int	pause_frames[]	= {25, 33, 42, 50, 0};
-	static int	fire_frames[]	= {5, 0};
+	static int	fire_frames[]	= {6, 8, 10, 0};
 
 	Weapon_Generic (ent, 4, 12, 50, 54, pause_frames, fire_frames, Weapon_RocketLauncher_Fire);
 }
@@ -1412,4 +1712,431 @@ void Weapon_BFG (edict_t *ent)
 }
 
 
-//======================================================================
+/*
+======================================================================
+
+Melee Weapons
+
+======================================================================
+*/
+
+/*
+======================================================================
+
+Fists
+
+======================================================================
+*/
+void weapon_punch_fire(edict_t *ent)
+{
+	vec3_t	start;
+	vec3_t	forward, right;
+	vec3_t	angles, offset;
+	int		kick = 2;
+	int		damage = 5;
+
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorScale(forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -2;
+
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+
+	if (is_quad)
+	{
+		damage *= 4;
+		kick *= 4;
+	}
+
+	VectorAdd (ent->client->v_angle, ent->client->kick_angles, angles);
+	AngleVectors (angles, forward, right, NULL);
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+
+	fire_melee(ent, start, forward, 50, kick, damage, 0, MOD_FISTS);
+
+	ent->client->ps.gunframe++;
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+}
+
+void Weapon_Fists (edict_t *ent)
+{
+	static int	pause_frames[]	= {11, 0};
+	static int	fire_frames[]	= {5, 0};
+
+	Weapon_Generic (ent, 0, 8, 11, 13, pause_frames, fire_frames, weapon_punch_fire);
+}
+
+/*
+======================================================================
+
+Sword
+
+======================================================================
+*/
+void weapon_sword_fire(edict_t *ent)
+{
+	vec3_t	start;
+	vec3_t	forward, right;
+	vec3_t	angles, offset;
+	int		kick = 2;
+	int		damage = 15;
+
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorScale(forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -2;
+
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+
+	if (is_quad)
+	{
+		damage *= 4;
+		kick *= 4;
+	}
+
+	VectorAdd (ent->client->v_angle, ent->client->kick_angles, angles);
+	AngleVectors (angles, forward, right, NULL);
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+
+	fire_melee(ent, start, forward, 80, kick, damage, 1, MOD_SWORD);
+
+	ent->client->ps.gunframe++;
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+}
+
+void Weapon_Sword (edict_t *ent)
+{
+	static int	pause_frames[]	= {11, 0};
+	static int	fire_frames[]	= {5, 0};
+
+	Weapon_Generic (ent, 0, 8, 11, 13, pause_frames, fire_frames, weapon_sword_fire);
+}
+
+/*
+======================================================================
+
+Dagger
+
+======================================================================
+*/
+void weapon_dagger_fire(edict_t *ent)
+{
+	vec3_t	start;
+	vec3_t	forward, right;
+	vec3_t	angles, offset;
+	int		kick = 2;
+	int		damage = 10;
+
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorScale(forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -2;
+
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+
+	if (is_quad)
+	{
+		damage *= 4;
+		kick *= 4;
+	}
+
+	VectorAdd (ent->client->v_angle, ent->client->kick_angles, angles);
+	AngleVectors (angles, forward, right, NULL);
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+
+	fire_melee(ent, start, forward, 65, kick, damage, 2, MOD_DAGGER);
+
+	ent->client->ps.gunframe++;
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+}
+
+void Weapon_Dagger (edict_t *ent)
+{
+	static int	pause_frames[]	= {11, 0};
+	static int	fire_frames[]	= {5, 0};
+
+	Weapon_Generic (ent, 0, 8, 11, 13, pause_frames, fire_frames, weapon_dagger_fire);
+}
+
+/*
+======================================================================
+
+Axe
+
+======================================================================
+*/
+void weapon_axe_fire(edict_t *ent)
+{
+	vec3_t	start;
+	vec3_t	forward, right;
+	vec3_t	angles, offset;
+	int		kick = 2;
+	int		damage = 15;
+
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorScale(forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -2;
+
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+
+	if (is_quad)
+	{
+		damage *= 4;
+		kick *= 4;
+	}
+
+	VectorAdd (ent->client->v_angle, ent->client->kick_angles, angles);
+	AngleVectors (angles, forward, right, NULL);
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+
+	fire_melee(ent, start, forward, 80, kick, damage, 3, MOD_AXE);
+
+	ent->client->ps.gunframe++;
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+}
+
+void Weapon_Axe (edict_t *ent)
+{
+	static int	pause_frames[]	= {11, 0};
+	static int	fire_frames[]	= {5, 0};
+
+	Weapon_Generic (ent, 0, 8, 11, 13, pause_frames, fire_frames, weapon_axe_fire);
+}
+
+/*
+======================================================================
+
+Mace
+
+======================================================================
+*/
+void weapon_mace_fire(edict_t *ent)
+{
+	vec3_t	start;
+	vec3_t	forward, right;
+	vec3_t	angles, offset;
+	int		kick = 2;
+	int		damage = 15;
+
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorScale(forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -2;
+
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+
+	if (is_quad)
+	{
+		damage *= 4;
+		kick *= 4;
+	}
+
+	VectorAdd (ent->client->v_angle, ent->client->kick_angles, angles);
+	AngleVectors (angles, forward, right, NULL);
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+
+	fire_melee(ent, start, forward, 80, kick, damage, 4, MOD_MACE);
+
+	ent->client->ps.gunframe++;
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+}
+
+void Weapon_Mace (edict_t *ent)
+{
+	static int	pause_frames[]	= {11, 0};
+	static int	fire_frames[]	= {5, 0};
+
+	Weapon_Generic (ent, 0, 8, 11, 13, pause_frames, fire_frames, weapon_mace_fire);
+}
+
+/*
+======================================================================
+
+Spear
+
+======================================================================
+*/
+void weapon_spear_fire(edict_t *ent)
+{
+	vec3_t	start;
+	vec3_t	forward, right;
+	vec3_t	angles, offset;
+	int		kick = 2;
+	int		damage = 15;
+
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorScale(forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -2;
+
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+
+	if (is_quad)
+	{
+		damage *= 4;
+		kick *= 4;
+	}
+
+	VectorAdd (ent->client->v_angle, ent->client->kick_angles, angles);
+	AngleVectors (angles, forward, right, NULL);
+	VectorSet(offset, 0, 8, ent->viewheight-8 );
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+
+	fire_melee(ent, start, forward, 90, kick, damage, 5, MOD_SPEAR);
+
+	ent->client->ps.gunframe++;
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+}
+
+void Weapon_Spear (edict_t *ent)
+{
+	static int	pause_frames[]	= {11, 0};
+	static int	fire_frames[]	= {5, 0};
+
+	Weapon_Generic (ent, 0, 8, 11, 13, pause_frames, fire_frames, weapon_spear_fire);
+}
+
+/*
+======================================================================
+
+Bow
+
+======================================================================
+*/
+void weapon_bow_fire(edict_t *ent, vec3_t g_offset, int damage)
+{
+	vec3_t	forward, right;
+	vec3_t	start;
+	vec3_t	offset;
+
+	if (ent->client->pers.inventory[ent->client->ammo_index] < 1)
+	{
+		ent->client->ps.gunframe = 6;
+		if (level.time >= ent->pain_debounce_time)
+		{
+			ent->pain_debounce_time = level.time + 1;
+		}
+		NoAmmoWeaponChange (ent);
+		return;
+	}
+
+	if (is_quad)
+		damage *= 4;
+	AngleVectors (ent->client->v_angle, forward, right, NULL);
+	VectorSet(offset, 24, 8, ent->viewheight-8);
+	VectorAdd (offset, g_offset, offset);
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+
+	VectorScale (forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -1;
+
+	fire_bow(ent, start, forward, damage, 1750);
+	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
+		ent->client->pers.inventory[ent->client->ammo_index]--;
+	gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/BowShoot.wav"), 1, ATTN_NORM, 0);
+	gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/BowPull.wav"), 1, ATTN_NORM, 0);
+
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+}
+
+void Weapon_Bow_Fire (edict_t *ent)
+{
+	weapon_bow_fire(ent, vec3_origin, 20);
+	ent->client->ps.gunframe++;
+}
+
+void Weapon_Bow (edict_t *ent)
+{
+	static int	pause_frames[]	= {22, 28, 34, 0};
+	static int	fire_frames[]	= {9, 0};
+
+	Weapon_Generic (ent, 7, 18, 36, 39, pause_frames, fire_frames, Weapon_Bow_Fire);
+}
+
+/*
+======================================================================
+
+Fireball
+
+======================================================================
+*/
+void weapon_fireball_fire(edict_t *ent, vec3_t g_offset, int damage)
+{
+	vec3_t	forward, right;
+	vec3_t	start;
+	vec3_t	offset;
+	int r;
+	qboolean castSuccess = false;
+
+	if (ent->client->pers.magicka < 5)															// If the player does not have enough magicka left to cast the spell
+	{
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/FireballFail.wav"), 1, ATTN_NORM, 0);	// Play the failed cast sound
+		gi.centerprintf(ent, "Not Enough Magicka\n");											// Print that the player does not have enough magicka
+		ent->client->ps.gunframe = 6;
+		if (level.time >= ent->pain_debounce_time)
+		{
+			ent->pain_debounce_time = level.time + 1;
+		}
+		NoAmmoWeaponChange (ent);																// Change Weapons
+		return;
+	}
+
+	ent->client->pers.magicka = ent->client->pers.magicka - 5;									// Spend the magicka to cast the spell
+
+	r = rand() % 100;
+	if (r < ent->client->pers.destruction * 2)													// Calculate castSuccess based on destruction skill
+	{
+		castSuccess = true;																		// The cast is successful
+		if (ent->client->pers.destruction < 100)												// If the destruction skill is less than the skill cap
+		{
+			ent->client->pers.destruction = ent->client->pers.destruction + 0.01;				// Add progress to the skill
+			if ((ent->client->pers.destruction - (int)ent->client->pers.destruction) * 100 >= (int)ent->client->pers.destruction - 25)		// If the skill levels
+			{
+				ent->client->pers.destruction = ent->client->pers.destruction + (1 - (ent->client->pers.destruction - (int)ent->client->pers.destruction));	// Increase the skill to the next level
+				gi.centerprintf(ent, "Your Destruction Has Increased To %i\n", (int)ent->client->pers.destruction);			// Print that the player's skill has increased
+				gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);						// Play skill up sound
+			}
+		}
+	}
+	else																									// If the cast has failed
+	{
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/FireballFail.wav"), 1, ATTN_NORM, 0);				// Play the failed cast sound
+		gi.centerprintf(ent, "The Cast Failed\n");																		// Print that the cast failed
+		return;
+	}
+
+	if (is_quad)
+		damage *= 4;
+	AngleVectors (ent->client->v_angle, forward, right, NULL);
+	VectorSet(offset, 24, 8, ent->viewheight-8);
+	VectorAdd (offset, g_offset, offset);
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+
+	VectorScale (forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = -1;
+
+	fire_fireball(ent, start, forward, damage, 2000);
+	gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/FireballCast.wav"), 1, ATTN_NORM, 0);
+
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+}
+
+void Weapon_Fireball_Fire (edict_t *ent)
+{
+	weapon_fireball_fire(ent, vec3_origin, 20);
+	ent->client->ps.gunframe++;
+}
+
+void Weapon_Fireball (edict_t *ent)
+{
+	static int	pause_frames[]	= {19, 32, 0};
+	static int	fire_frames[]	= {5, 0};
+
+	Weapon_Generic (ent, 4, 8, 52, 55, pause_frames, fire_frames, Weapon_Fireball_Fire);
+}

@@ -5,6 +5,8 @@ void ClientUserinfoChanged (edict_t *ent, char *userinfo);
 
 void SP_misc_teleporter_dest (edict_t *ent);
 
+void Cmd_DisplayStats (edict_t *ent);
+
 //
 // Gross, ugly, disgustuing hack section
 //
@@ -364,6 +366,42 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				message = "tried to invade";
 				message2 = "'s personal space";
 				break;
+			case MOD_FISTS:
+				message = "killed";
+				message2 = " with a punch to the face";
+				break;
+			case MOD_SWORD:
+				message = "cut";
+				message2 = " in half with their sword";
+				break;
+			case MOD_DAGGER:
+				message = "stabbed";
+				message2 = " to death";
+				break;
+			case MOD_AXE:
+				message = "split";
+				message2 = "'s skull in half with their axe";
+				break;
+			case MOD_MACE:
+				message = "bashed";
+				message2 = "'s skull in with their mace";
+				break;
+			case MOD_SPEAR:
+				message = "impaled";
+				message2 = " on thier spear";
+				break;
+			case MOD_BOW:
+				message = "sniped";
+				message2 = " with thier bow";
+				break;
+			case MOD_FIREBALL:
+				message = "ate";
+				message2 = "'s fireball";
+				break;
+			case MOD_BURNING:
+				message = "burned to a crisp from";
+				message2 = "'s fire";
+				break;
 			}
 			if (message)
 			{
@@ -401,7 +439,7 @@ void TossClientWeapon (edict_t *self)
 	item = self->client->pers.weapon;
 	if (! self->client->pers.inventory[self->client->ammo_index] )
 		item = NULL;
-	if (item && (strcmp (item->pickup_name, "Blaster") == 0))
+	if (item && (strcmp (item->pickup_name, "Fists") == 0))
 		item = NULL;
 
 	if (!((int)(dmflags->value) & DF_QUAD_DROP))
@@ -591,7 +629,13 @@ void InitClientPersistant (gclient_t *client)
 
 	memset (&client->pers, 0, sizeof(client->pers));
 
-	item = FindItem("Blaster");
+	item = FindItem("Fireball");						// Start with fireball magic
+	client->pers.selected_item = ITEM_INDEX(item);
+	client->pers.inventory[client->pers.selected_item] = 1;
+
+	client->pers.weapon = item;
+
+	item = FindItem("Fists");							// Start with bare hands
 	client->pers.selected_item = ITEM_INDEX(item);
 	client->pers.inventory[client->pers.selected_item] = 1;
 
@@ -599,13 +643,32 @@ void InitClientPersistant (gclient_t *client)
 
 	client->pers.health			= 100;
 	client->pers.max_health		= 100;
-
+	client->pers.magicka		= 100;					// Initialize the player's magicka to 100
+	client->pers.max_magicka	= 100;					// Initialize the player's maximum amount of magicka to 100
+	
 	client->pers.max_bullets	= 200;
 	client->pers.max_shells		= 100;
 	client->pers.max_rockets	= 50;
 	client->pers.max_grenades	= 50;
 	client->pers.max_cells		= 200;
 	client->pers.max_slugs		= 50;
+	client->pers.max_arrows		= 50;					// Maximum of 50 arrows
+
+	client->pers.acrobatics		= 15;					// Initalize the acrobatics skill
+	client->pers.handtohand		= 25;					// Initialize the hand-to-hand skill
+	client->pers.longblade		= 25;					// Initialize the long blade skill
+	client->pers.shortblade		= 25;					// Initialize the short blade skill
+	client->pers.axe			= 25;					// Initialize the axe skill
+	client->pers.blunt			= 25;					// Initialize the blunt skill
+	client->pers.spear			= 25;					// Initialize the spear skill
+	client->pers.marksman		= 25;					// Initialize the marksman skill
+	client->pers.destruction	= 25;					// Initialize the destruction skill
+
+	client->pers.magickaregen	= 0;					// Initialize the magicka regen timer to 0 seconds
+	client->pers.burning		= 0;					// Initialize the burning timer to 0 seconds
+	client->pers.burningcounter = 0;					// Initialize the burning counter to 0
+
+	client->pers.potions		= 0;					// Initialize the potion counter to 0
 
 	client->pers.connected = true;
 }
@@ -1564,6 +1627,10 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	edict_t	*other;
 	int		i, j;
 	pmove_t	pm;
+	vec3_t forward, right, up;
+	char	entry[1024];
+	char	string[1400];
+	int		stringlength;
 
 	level.current_entity = ent;
 	client = ent->client;
@@ -1644,6 +1711,22 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		{
 			gi.sound(ent, CHAN_VOICE, gi.soundindex("*jump1.wav"), 1, ATTN_NORM, 0);
 			PlayerNoise(ent, ent->s.origin, PNOISE_SELF);
+
+			AngleVectors(ent->client->v_angle, forward, right, up);
+			VectorMA(ent->velocity, client->pers.acrobatics * (client->pers.acrobatics - 15), up, ent->velocity);
+			
+			
+			if (ent->client->pers.acrobatics < 100)																				// If the player is not skill capped in acrobatics
+			{
+				ent->client->pers.acrobatics = (ent->client->pers.acrobatics + 0.01);													// Add 0.01 to the player's acrobatics skill
+				if ((ent->client->pers.acrobatics - (int)ent->client->pers.acrobatics) * 100 >= (int)ent->client->pers.acrobatics - 15)	// If the player skills up
+				{
+					ent->client->pers.acrobatics = ent->client->pers.acrobatics + (1 - (ent->client->pers.acrobatics - (int)ent->client->pers.acrobatics));  // Increase the skill to the next integer
+					gi.centerprintf(ent, "Your Acrobatics Has Increased To %i\n", (int)ent->client->pers.acrobatics);		// Print that the player's skill has increased
+					gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/skill.wav"), 1, ATTN_NORM, 0);							// Play skill up sound
+				}
+			}
+			
 		}
 
 		ent->viewheight = pm.viewheight;
@@ -1732,6 +1815,27 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		if (other->inuse && other->client->chase_target == ent)
 			UpdateChaseCam(other);
 	}
+
+	if (client->pers.magickaregen > 0)											// If the player has time left on their magicka regen effect from a potion
+	{
+		client->pers.magickaregen = client->pers.magickaregen - 0.1;			// Remove 0.1 seconds from the magicka regen timer
+		if (client->pers.magicka < client->pers.max_magicka)					// If the player's max magicka is less than the cap
+			client->pers.magicka = client->pers.magicka + 1;					// Increase the player's magicka by 1 point
+	}
+
+	if (client->pers.burning > 0)												// If the player has time left on their burning effect from a fireball
+	{
+		client->pers.burningcounter = client->pers.burningcounter + 0.1;		// Increase the burning counter by 0.1
+		if (client->pers.burningcounter >= 1);									// If the burning counter reaches 1
+		{
+			client->pers.burningcounter = client->pers.burningcounter - 1;		// Decrease the burning counter by 1
+			T_Damage (ent, ent->client->pers.burner, ent->client->pers.burner, vec3_origin, ent->s.origin, vec3_origin, 1, 0, 0, MOD_BURNING);
+			// T_Damage(ent, ent->client->pers.burner, ent->client->pers.burner, NULL, ent->s.origin, NULL, 1, 0, DAMAGE_ENERGY, MOD_BURNING);		// Deal burning damage
+		}
+		client->pers.burning = client->pers.burning - 0.1;						// Remove 0.1 seconds from the burning timer
+	}
+
+	Cmd_DisplayStats(ent);
 }
 
 
@@ -1793,4 +1897,36 @@ void ClientBeginServerFrame (edict_t *ent)
 			PlayerTrail_Add (ent->s.old_origin);
 
 	client->latched_buttons = 0;
+}
+
+void ClientTalk(edict_t *ent, int r)															// This causes the player to play an "attacking" talk sound e.g. "You Will Die!"
+{
+	if (r == 0)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack01.wav"), 1, ATTN_NORM, 0);
+	if (r == 1)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack02.wav"), 1, ATTN_NORM, 0);
+	if (r == 2)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack03.wav"), 1, ATTN_NORM, 0);
+	if (r == 3)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack04.wav"), 1, ATTN_NORM, 0);
+	if (r == 4)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack05.wav"), 1, ATTN_NORM, 0);
+	if (r == 5)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack06.wav"), 1, ATTN_NORM, 0);
+	if (r == 6)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack07.wav"), 1, ATTN_NORM, 0);
+	if (r == 7)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack08.wav"), 1, ATTN_NORM, 0);
+	if (r == 8)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack09.wav"), 1, ATTN_NORM, 0);
+	if (r == 9)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack10.wav"), 1, ATTN_NORM, 0);
+	if (r == 10)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack11.wav"), 1, ATTN_NORM, 0);
+	if (r == 11)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack12.wav"), 1, ATTN_NORM, 0);
+	if (r == 12)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack13.wav"), 1, ATTN_NORM, 0);
+	if (r == 13)
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/Attack14.wav"), 1, ATTN_NORM, 0);
 }
