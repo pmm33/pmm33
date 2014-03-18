@@ -1734,6 +1734,8 @@ void weapon_punch_fire(edict_t *ent)
 	vec3_t	angles, offset;
 	int		kick = 2;
 	int		damage = 5;
+	// COMMENT: Maybe Increase its damage? seems weak with many players and lack of time to get weapons
+	// RESPONSE: I thought about this too, but I decided to leave the damage this low to give a sense of inferiority against someone coming at you with a sword or bow.  The fists were also pretty much useless in Morrowind.
 
 	AngleVectors(ent->client->v_angle, forward, right, NULL);
 	VectorScale(forward, -2, ent->client->kick_origin);
@@ -1753,7 +1755,7 @@ void weapon_punch_fire(edict_t *ent)
 	VectorSet(offset, 0, 8, ent->viewheight-8 );
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	fire_melee(ent, start, forward, 50, kick, damage, 0, MOD_FISTS);
+	fire_melee(ent, start, forward, 80, kick, damage, 0, MOD_FISTS);
 
 	ent->client->ps.gunframe++;
 	PlayerNoise(ent, start, PNOISE_WEAPON);
@@ -1800,7 +1802,7 @@ void weapon_sword_fire(edict_t *ent)
 	VectorSet(offset, 0, 8, ent->viewheight-8 );
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	fire_melee(ent, start, forward, 80, kick, damage, 1, MOD_SWORD);
+	fire_melee(ent, start, forward, 150, kick, damage, 1, MOD_SWORD);
 
 	ent->client->ps.gunframe++;
 	PlayerNoise(ent, start, PNOISE_WEAPON);
@@ -1847,7 +1849,7 @@ void weapon_dagger_fire(edict_t *ent)
 	VectorSet(offset, 0, 8, ent->viewheight-8 );
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	fire_melee(ent, start, forward, 65, kick, damage, 2, MOD_DAGGER);
+	fire_melee(ent, start, forward, 100, kick, damage, 2, MOD_DAGGER);
 
 	ent->client->ps.gunframe++;
 	PlayerNoise(ent, start, PNOISE_WEAPON);
@@ -1894,7 +1896,9 @@ void weapon_axe_fire(edict_t *ent)
 	VectorSet(offset, 0, 8, ent->viewheight-8 );
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	fire_melee(ent, start, forward, 80, kick, damage, 3, MOD_AXE);
+	fire_melee(ent, start, forward, 150, kick, damage, 3, MOD_AXE);
+	// COMMENT: Consider a longer range, for this weapon, maybe 150
+	// RESPONSE: Someone who helped test my mod for me was also saying this, I will make this change
 
 	ent->client->ps.gunframe++;
 	PlayerNoise(ent, start, PNOISE_WEAPON);
@@ -1941,7 +1945,9 @@ void weapon_mace_fire(edict_t *ent)
 	VectorSet(offset, 0, 8, ent->viewheight-8 );
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	fire_melee(ent, start, forward, 80, kick, damage, 4, MOD_MACE);
+	fire_melee(ent, start, forward, 150, kick, damage, 4, MOD_MACE);
+	// COMMENT: Consider a longer range, for this weapon, maybe 125
+	// RESPONSE: Someone who helped test my mod for me was also saying this, I will make this change
 
 	ent->client->ps.gunframe++;
 	PlayerNoise(ent, start, PNOISE_WEAPON);
@@ -1988,7 +1994,9 @@ void weapon_spear_fire(edict_t *ent)
 	VectorSet(offset, 0, 8, ent->viewheight-8 );
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	fire_melee(ent, start, forward, 90, kick, damage, 5, MOD_SPEAR);
+	fire_melee(ent, start, forward, 180, kick, damage, 5, MOD_SPEAR);
+	// COMMENT: Consider a longer range, for this weapon, maybe 200
+	// RESPONSE: Someone who helped test my mod for me was also saying this, I will make this change
 
 	ent->client->ps.gunframe++;
 	PlayerNoise(ent, start, PNOISE_WEAPON);
@@ -2047,7 +2055,9 @@ void weapon_bow_fire(edict_t *ent, vec3_t g_offset, int damage)
 
 void Weapon_Bow_Fire (edict_t *ent)
 {
-	weapon_bow_fire(ent, vec3_origin, 20);
+	weapon_bow_fire(ent, vec3_origin, 35);
+	// COMMENT: MAYBE INCREASE THE DAMAGE SLIGHTLY
+	// RESPONSE: Sure, I will make this change
 	ent->client->ps.gunframe++;
 }
 
@@ -2121,7 +2131,7 @@ void weapon_fireball_fire(edict_t *ent, vec3_t g_offset, int damage)
 	VectorScale (forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -1;
 
-	fire_fireball(ent, start, forward, damage, 2000);
+	fire_fireball(ent, start, forward, damage, 1500);
 	gi.sound(ent, CHAN_AUTO, gi.soundindex("morrowind/FireballCast.wav"), 1, ATTN_NORM, 0);
 
 	PlayerNoise(ent, start, PNOISE_WEAPON);
@@ -2130,6 +2140,8 @@ void weapon_fireball_fire(edict_t *ent, vec3_t g_offset, int damage)
 void Weapon_Fireball_Fire (edict_t *ent)
 {
 	weapon_fireball_fire(ent, vec3_origin, 20);
+	// COMMENT: MAYBE LOWER SPEED AND INCREASE DAMANGE OR LEAVE IT ALONE AND DECREASE DAMAGE
+	// RESPONSE: It did seem to me that the fireball was a bit too fast.  I'll lower the speed but I feel that the damage is fine.
 	ent->client->ps.gunframe++;
 }
 
