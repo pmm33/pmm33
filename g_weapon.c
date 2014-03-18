@@ -1311,7 +1311,7 @@ void fireball_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *
 			gi.sound(other, CHAN_AUTO, gi.soundindex("morrowind/FireballHit.wav"), 1, ATTN_NORM, 0);
 			if (other->client)
 			{
-				other->client->pers.burning = 5;
+				other->client->pers.burning = 2.5;
 				other->client->pers.burner = self->owner;
 			}
 	}
