@@ -1733,7 +1733,7 @@ void weapon_punch_fire(edict_t *ent)
 	vec3_t	forward, right;
 	vec3_t	angles, offset;
 	int		kick = 2;
-	int		damage = 5;
+	int		damage = 5;												//COMMENT: Maybe Increase its damage? seems weak with many players and lack of time to get weapons
 
 	AngleVectors(ent->client->v_angle, forward, right, NULL);
 	VectorScale(forward, -2, ent->client->kick_origin);
@@ -1894,7 +1894,7 @@ void weapon_axe_fire(edict_t *ent)
 	VectorSet(offset, 0, 8, ent->viewheight-8 );
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	fire_melee(ent, start, forward, 80, kick, damage, 3, MOD_AXE);
+	fire_melee(ent, start, forward, 80, kick, damage, 3, MOD_AXE);					//COMMENT: Consider a longer range, for this weapon, maybe 150
 
 	ent->client->ps.gunframe++;
 	PlayerNoise(ent, start, PNOISE_WEAPON);
@@ -1941,7 +1941,7 @@ void weapon_mace_fire(edict_t *ent)
 	VectorSet(offset, 0, 8, ent->viewheight-8 );
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	fire_melee(ent, start, forward, 80, kick, damage, 4, MOD_MACE);
+	fire_melee(ent, start, forward, 80, kick, damage, 4, MOD_MACE);						//COMMENT: Consider a longer range, for this weapon, maybe 125
 
 	ent->client->ps.gunframe++;
 	PlayerNoise(ent, start, PNOISE_WEAPON);
@@ -1988,7 +1988,7 @@ void weapon_spear_fire(edict_t *ent)
 	VectorSet(offset, 0, 8, ent->viewheight-8 );
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	fire_melee(ent, start, forward, 90, kick, damage, 5, MOD_SPEAR);
+	fire_melee(ent, start, forward, 90, kick, damage, 5, MOD_SPEAR);				//COMMENT: Consider a longer range, for this weapon, maybe 200
 
 	ent->client->ps.gunframe++;
 	PlayerNoise(ent, start, PNOISE_WEAPON);
@@ -2047,7 +2047,7 @@ void weapon_bow_fire(edict_t *ent, vec3_t g_offset, int damage)
 
 void Weapon_Bow_Fire (edict_t *ent)
 {
-	weapon_bow_fire(ent, vec3_origin, 20);
+	weapon_bow_fire(ent, vec3_origin, 20);								//COMMENT: MAYBE INCREASE THE DAMAGE SLIGHTLY 
 	ent->client->ps.gunframe++;
 }
 
@@ -2129,7 +2129,7 @@ void weapon_fireball_fire(edict_t *ent, vec3_t g_offset, int damage)
 
 void Weapon_Fireball_Fire (edict_t *ent)
 {
-	weapon_fireball_fire(ent, vec3_origin, 20);
+	weapon_fireball_fire(ent, vec3_origin, 20);															//COMMENT: MAYBE LOWER SPEED AND INCREASE DAMANGE OR LEAVE IT ALONE AND DECREASE DAMAGE
 	ent->client->ps.gunframe++;
 }
 
